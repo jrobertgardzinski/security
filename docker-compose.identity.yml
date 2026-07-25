@@ -25,7 +25,11 @@ name: security
 # rebuild) — it auto-instruments HTTP and Kafka and exports trace spans to Tempo. Per service, add
 # `<<: *otel-agent` to its environment plus its own OTEL_SERVICE_NAME, and mount the agent jar.
 x-otel-agent: &otel-agent
-  JAVA_TOOL_OPTIONS: "-javaagent:/otel/opentelemetry-javaagent.jar"
+  # up-scripts export OTEL_JAVA_TOOL_OPTIONS="" when the agent jar could not be fetched:
+  # a -javaagent pointing at a missing file aborts the JVM, which would crash-loop every
+  # JVM service instead of "starting without tracing" (no-colon ${VAR-...} so an
+  # explicitly empty value disables the agent, absence keeps it)
+  JAVA_TOOL_OPTIONS: ${OTEL_JAVA_TOOL_OPTIONS--javaagent:/otel/opentelemetry-javaagent.jar}
   OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
   OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
   OTEL_TRACES_EXPORTER: otlp
