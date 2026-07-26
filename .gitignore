@@ -19,6 +19,8 @@ docs/glossary/site/
 /test-starter/
 /adjustable-clock/
 /infrastructure-micronaut-clock/
+/transactional-outbox/
+/infrastructure-spring-outbox/
 /microservice-idp/
 /microservice-sms/
 /microservice-push/

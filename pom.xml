@@ -34,6 +34,9 @@
     <modules>
         <module>adjustable-clock</module>
         <module>infrastructure-micronaut-clock</module>
+        <!-- framework-free core + its Spring adapter, the same split as the clock pair above -->
+        <module>transactional-outbox</module>
+        <module>infrastructure-spring-outbox</module>
         <module>offline-jwt</module>
         <module>voting</module>
         <module>test-starter</module>
