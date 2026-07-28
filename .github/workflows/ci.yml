@@ -24,7 +24,7 @@ jobs:
       - name: Checkout workspace (aggregator)
         uses: actions/checkout@v4
 
-      # The 11 aggregated sub-repos, each into the directory the aggregator pom expects.
+      # The 13 aggregated sub-repos, each into the directory the aggregator pom expects.
       # Pinned to main; a sub-repo feature branch is validated in its own repo's checks.
       - uses: actions/checkout@v4
         with:
@@ -35,6 +35,16 @@ jobs:
         with:
           repository: jrobertgardzinski/infrastructure-micronaut-clock
           path: infrastructure-micronaut-clock
+          token: ${{ secrets.REPO_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/transactional-outbox
+          path: transactional-outbox
+          token: ${{ secrets.REPO_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/infrastructure-spring-outbox
+          path: infrastructure-spring-outbox
           token: ${{ secrets.REPO_PAT }}
       - uses: actions/checkout@v4
         with:
@@ -109,6 +119,16 @@ jobs:
         with:
           repository: jrobertgardzinski/infrastructure-micronaut-clock
           path: infrastructure-micronaut-clock
+          token: ${{ secrets.REPO_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/transactional-outbox
+          path: transactional-outbox
+          token: ${{ secrets.REPO_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/infrastructure-spring-outbox
+          path: infrastructure-spring-outbox
           token: ${{ secrets.REPO_PAT }}
       - uses: actions/checkout@v4
         with:
