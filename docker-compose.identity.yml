@@ -239,6 +239,39 @@ services:
       retries: 20
       start_period: 15s
 
+  # The dead-letter topic is a LEDGER, not a tape — and until now nothing said so, so the broker's
+  # default applied: records aged out after seven days. That silently broke a design that depends on
+  # them lasting: microservice-email keeps its operator view of parked mail in memory and rebuilds it
+  # by replaying the WHOLE topic at every start, and it retracts a re-driven mail with a record of its
+  # own because Kafka has no delete. A verification, password reset or MFA code parked over a holiday
+  # was therefore swept by the broker and gone from the only window anyone has onto it.
+  #
+  # Compaction, not infinite retention: the records are keyed by event id (see
+  # MailRequestsConsumer#sendKeyed), so an unsettled mail keeps its parked record for ever while a
+  # settled one collapses to its retraction — and the startup replay stays proportional to the number
+  # of DISTINCT parked mails rather than to the service's entire history.
+  #
+  # A one-shot service rather than a line in the broker's environment, because per-topic settings are
+  # not broker settings. Idempotent: creating an existing topic is tolerated, and the --alter keeps
+  # an already-created one honest.
+  kafka-topics-init:
+    image: apache/kafka:3.9.1
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: on-failure
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists \
+          --topic mail-requests-dlq --partitions 1 --replication-factor 1 \
+          --config cleanup.policy=compact --config retention.ms=-1 --config min.cleanable.dirty.ratio=0.1
+        /opt/kafka/bin/kafka-configs.sh --bootstrap-server kafka:9092 --alter \
+          --entity-type topics --entity-name mail-requests-dlq \
+          --add-config cleanup.policy=compact,retention.ms=-1
+        /opt/kafka/bin/kafka-configs.sh --bootstrap-server kafka:9092 --describe \
+          --entity-type topics --entity-name mail-requests-dlq
+
   mailpit:
     restart: unless-stopped
     image: axllent/mailpit
