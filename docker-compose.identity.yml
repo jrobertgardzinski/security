@@ -7,6 +7,18 @@
 # Products include this file from their own compose (portal/docker-compose.yml,
 # formula/docker-compose.yml) — the identity services are defined ONCE, here.
 #
+# RESTART POLICY: every service here carries `restart: unless-stopped`, because Docker brings a
+# container back on daemon start ONLY for `always` or `unless-stopped` — `depends_on` is a
+# `compose up` concept and does nothing on a host reboot. Without it a 3 a.m. reboot came back
+# with HALF a stack: the products' own services and databases returned (they carry `always`), but
+# no Kafka (sagas dead), no security (every write introspects into a hole) and no mail. The policy
+# lives HERE, next to the definitions, so both products inherit it — portal used to bolt it on as
+# an override, which only newer Compose merges and which formula never got at all.
+#
+# `unless-stopped`, not `always`: a container somebody stopped on purpose stays stopped across a
+# daemon restart — portal's ./e2e-saga-outage.sh depends on that, and an operator who stops the
+# broker to investigate expects it to stay down.
+#
 # The project name is pinned to "security" in every entry compose so all three files land in
 # the SAME compose project: existing dev volumes (security_pgdata & friends) survive the
 # workspace split, and bringing up portal and formula together reuses one identity stack
@@ -38,6 +50,7 @@ x-otel-agent: &otel-agent
 
 services:
   security:
+    restart: unless-stopped
     build:
       context: microservice-security
       dockerfile: security-infrastructure/Dockerfile
@@ -103,6 +116,7 @@ services:
         condition: service_healthy
 
   email:
+    restart: unless-stopped
     build:
       context: microservice-email
     ports:
@@ -135,6 +149,7 @@ services:
   # stub OIDC provider: "Sign in with Google" without Google. The browser visits its authorize
   # form on the published port; security exchanges codes with it service-to-service.
   idp:
+    restart: unless-stopped
     build:
       context: microservice-idp
     ports:
@@ -154,6 +169,7 @@ services:
   # notification channel stubs — shared: security's MFA SMS factor and the paddock's fan-out
   # both deliver through them; stub-send unless SMS_PROVIDER / PUSH_PROVIDER is set
   sms:
+    restart: unless-stopped
     build:
       context: microservice-sms
     healthcheck:
@@ -164,6 +180,7 @@ services:
       start_period: 5s
 
   push:
+    restart: unless-stopped
     build:
       context: microservice-push
     healthcheck:
@@ -174,6 +191,7 @@ services:
       start_period: 5s
 
   kafka:
+    restart: unless-stopped
     # single-node KRaft — the event backbone (mail requests, the deletion saga, thread cascades)
     image: apache/kafka:3.9.1
     environment:
@@ -196,6 +214,7 @@ services:
       start_period: 15s
 
   mailpit:
+    restart: unless-stopped
     image: axllent/mailpit
     ports:
       - "8025:8025"   # web UI; SMTP (1025) stays internal

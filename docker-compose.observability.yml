@@ -10,10 +10,16 @@
 # the config paths below are relative to THIS file, so they resolve into
 # shared/observability/ wherever the including compose lives.
 
+#
+# RESTART POLICY: `unless-stopped` on every service, for the reason spelled out in
+# docker-compose.identity.yml — and with an extra edge here. Observability is what NOTICES a
+# half-returned stack, so if anything must survive a reboot it is this: a monitoring stack that
+# does not come back leaves nothing to explain the outage with.
 name: security
 
 services:
   prometheus:
+    restart: unless-stopped
     image: prom/prometheus:v2.53.0
     command: ["--config.file=/etc/prometheus/prometheus.yml"]
     volumes:
@@ -23,6 +29,7 @@ services:
       - "9090:9090"
 
   loki:
+    restart: unless-stopped
     image: grafana/loki:3.1.0
     command: ["-config.file=/etc/loki/config.yml"]
     volumes:
@@ -32,6 +39,7 @@ services:
       - "3100:3100"
 
   promtail:
+    restart: unless-stopped
     image: grafana/promtail:3.1.0
     command: ["-config.file=/etc/promtail/config.yml"]
     volumes:
@@ -46,6 +54,7 @@ services:
   # trace spans the whole saga. The agent jar is fetched by the product up-scripts into
   # observability/otel (gitignored, 21 MB).
   tempo:
+    restart: unless-stopped
     image: grafana/tempo:2.5.0
     command: ["-config.file=/etc/tempo/config.yml"]
     volumes:
@@ -56,6 +65,7 @@ services:
       - "4318:4318"   # OTLP/HTTP receiver
 
   grafana:
+    restart: unless-stopped
     image: grafana/grafana:11.1.0
     environment:
       # anonymous admin is a DEV default; a public deployment flips GRAFANA_ANON=false
@@ -75,6 +85,7 @@ services:
       - tempo
 
   cadvisor:
+    restart: unless-stopped
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     privileged: true
     volumes:
@@ -85,6 +96,7 @@ services:
       - /dev/disk:/dev/disk:ro
 
   node-exporter:
+    restart: unless-stopped
     image: prom/node-exporter:v1.8.1
     command: ["--path.rootfs=/host"]
     pid: host
