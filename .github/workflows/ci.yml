@@ -194,6 +194,12 @@ jobs:
       - name: Install UI dependencies
         run: npm ci
         working-directory: microservice-security/security-ui
+      # Cheap and first: the error model is pure decision-making ("what does this status mean to a
+      # person?") and every one of its rules used to be an unwritten else that told users their
+      # password was wrong when the database was down. No browser, no stack — seconds.
+      - name: Unit-test the UI's error model (security-ui)
+        run: npm test
+        working-directory: microservice-security/security-ui
       - name: Install the Playwright browser
         run: npx playwright install --with-deps chromium
         working-directory: microservice-security/security-ui
