@@ -98,8 +98,10 @@ services:
       SECURITY_OAUTH_ALLOWED_RETURN_PREFIXES: http://localhost:8083/,http://localhost:8084/
       # MFA SMS factor delivers codes through the shared SMS channel service (internal)
       SECURITY_SMS_URL: http://sms:8088
-      # ... and authenticates to it, same shared secret the sms service is given below
-      SECURITY_SMS_API_KEY: ${SMS_API_KEY:-local-dev-key}
+      # ... and authenticates to it when a key is configured. Harmless when none is: the header is
+      # simply omitted, and the channel accepts as it always did (see the note beside the sms
+      # service for why the shared dev stack does not enforce one).
+      SECURITY_SMS_API_KEY: ${SMS_API_KEY:-}
     # Readiness, not just "process started": a JVM binds its port at the end of startup, and the
     # temurin/python images ship no curl — so the probe is a bare TCP connect (bash /dev/tcp or a
     # python socket). Dependents wait on service_healthy instead of racing a service mid-boot.
@@ -181,12 +183,19 @@ services:
     build:
       context: microservice-sms
     environment:
-      # Both channels now demand X-Api-Key, like the mail service always has. They used to take a
-      # message from anything that could reach the port — and the README's own next step is to point
-      # them at a real gateway, which would have turned that into a paid-SMS pump and a phishing
-      # channel sending "Your sign-in code is ..." from the portal's own number. security is given
-      # the same value below so the local stack exercises the authenticated path, not a bypass.
-      SMS_API_KEY: ${SMS_API_KEY:-local-dev-key}
+      # NOT set by default, and that is a correction of the same day it was added.
+      #
+      # Both channels can now demand X-Api-Key — that capability is real and stays. But setting the
+      # key HERE turns it on for the shared identity stack, which BOTH products include, and the
+      # game's paddock calls these same two services without the header (its Notifier carries an
+      # api key for mail only). Enforcing it in the shared dev compose therefore answered 401 to
+      # every notification the other product sent — a change in this repository silently breaking a
+      # product nobody was working on.
+      #
+      # Enforcement belongs where each deployment owns its own secrets (k8s), not in the one file
+      # two products share. Set SMS_API_KEY in the environment to switch it on locally; the
+      # services stay closed to nobody until then, exactly as before 2026-07-28.
+      SMS_API_KEY: ${SMS_API_KEY:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8088), 2)"]
       interval: 3s
@@ -199,7 +208,7 @@ services:
     build:
       context: microservice-push
     environment:
-      PUSH_API_KEY: ${PUSH_API_KEY:-local-dev-key}
+      PUSH_API_KEY: ${PUSH_API_KEY:-}
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 8089), 2)"]
       interval: 3s
