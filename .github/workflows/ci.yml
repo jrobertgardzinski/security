@@ -105,6 +105,44 @@ jobs:
   # The same Gherkin specs, driven through a real browser (cucumber-js + Playwright) against
   # the security service and its React UI. Only the modules the security jar needs are built
   # (-am closure), tests skipped — the reactor job owns those.
+  # The three Python services had suites that passed and that NOTHING ran: this workflow checked out
+  # eleven Java repositories and never these, and its only run: steps were Maven, npm and Playwright.
+  # A regression in the stub IdP or in either notification channel sailed through a green build — and
+  # those are the services carrying the OIDC dance and the MFA code delivery. Stdlib unittest, so the
+  # job needs no dependencies at all and costs seconds.
+  python-stubs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/microservice-idp
+          path: microservice-idp
+          token: ${{ secrets.REPO_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/microservice-sms
+          path: microservice-sms
+          token: ${{ secrets.REPO_PAT }}
+      - uses: actions/checkout@v4
+        with:
+          repository: jrobertgardzinski/microservice-push
+          path: microservice-push
+          token: ${{ secrets.REPO_PAT }}
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Stub IdP — the OIDC dance, the header-splitting guard and the code store's ceiling
+        run: python -m unittest -v
+        working-directory: microservice-idp
+      - name: SMS channel — validation, the API key, and what the log may not carry
+        run: python -m unittest -v
+        working-directory: microservice-sms
+      - name: Push channel — the same, for the other notification adapter
+        run: python -m unittest -v
+        working-directory: microservice-push
+
   e2e:
     runs-on: ubuntu-latest
     steps:
