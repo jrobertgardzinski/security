@@ -108,11 +108,21 @@ services:
       # simply omitted, and the channel accepts as it always did (see the note beside the sms
       # service for why the shared dev stack does not enforce one).
       SECURITY_SMS_API_KEY: ${SMS_API_KEY:-}
-    # Readiness, not just "process started": a JVM binds its port at the end of startup, and the
-    # temurin/python images ship no curl — so the probe is a bare TCP connect (bash /dev/tcp or a
-    # python socket). Dependents wait on service_healthy instead of racing a service mid-boot.
+    # A real HTTP request against /health/readiness, not just "did the JVM bind the port".
+    #
+    # It was a bare TCP connect until 2026-07-29, which is the shape of probe this workspace has
+    # already had to replace twice: it says a process exists and nothing about whether it works.
+    # Identity's own listener loop can stop — OffboardingOutcomeListener halts its container when
+    # its retries are spent — while the port stays open and sign-in keeps answering, and every
+    # account deletion in the portal quietly stops closing. readiness is where that shows
+    # (OffboardingListenerHealth); the group, not the aggregate, for the same reason the k8s
+    # manifest uses it.
+    #
+    # Spoken through bash's /dev/tcp because this image (eclipse-temurin) ships neither curl nor
+    # wget, HTTP/1.0 so the server closes the connection itself, and the match is anchored on the
+    # status line with no reason phrase — the same three tricks as memes and comments.
     healthcheck:
-      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/8080"]
+      test: ["CMD", "bash", "-c", 'exec 3<>/dev/tcp/localhost/8080 && printf "GET /health/readiness HTTP/1.0\r\n\r\n" >&3 && head -1 <&3 | grep -q "^HTTP/1.[01] 200"']
       interval: 3s
       timeout: 3s
       retries: 40

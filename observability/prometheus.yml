@@ -36,15 +36,27 @@ scrape_configs:
     static_configs:
       - targets: ["email:8080"]
 
+  # The MANAGEMENT ports, not the request ports. Both services put their actuator on a connector
+  # of its own (management.server.port), so /actuator/prometheus does not exist on 8083 or 8085 at
+  # all. memes moved on 2026-07-29 and this file was last touched on 07-11, so for the whole of
+  # that day the memes job scraped a 404.
+  #
+  # To be precise about how loud that is: `up` goes to 0 on a failed scrape, so the TargetDown rule
+  # in alert-rules.yml does fire after two minutes — on Prometheus's own /alerts page and in
+  # Grafana. What it does NOT do is reach anyone: this stack runs no Alertmanager on purpose
+  # ("nobody pages a hobbyist at 3 a.m."), no build fails and no probe goes red, so the practical
+  # symptom is dashboards with no memes in them until somebody happens to look at /alerts.
+  # A scrape target is configuration with no test and no user; if either service's
+  # management.server.port changes, this line changes with it.
   - job_name: memes
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ["memes:8083"]
+      - targets: ["memes:9083"]
 
   - job_name: comments
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ["comments:8085"]
+      - targets: ["comments:9085"]
 
   - job_name: paddock
     static_configs:
