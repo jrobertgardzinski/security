@@ -20,6 +20,9 @@ on:
 jobs:
   reactor:
     runs-on: ubuntu-latest
+    # the same ceiling and the same reasoning as portal/ci.yml: a wedged build must not sit here
+    # for six hours. Added on 2026-07-29 — the timeouts had been applied selectively.
+    timeout-minutes: 30
     steps:
       - name: Checkout workspace (aggregator)
         uses: actions/checkout@v4
@@ -145,6 +148,8 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    # the browser suite stands a real stack up; 60 is the honest ceiling, as in portal/ci.yml
+    timeout-minutes: 60
     steps:
       - name: Checkout workspace (aggregator)
         uses: actions/checkout@v4

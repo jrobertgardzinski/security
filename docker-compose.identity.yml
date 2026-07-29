@@ -15,6 +15,12 @@
 # lives HERE, next to the definitions, so both products inherit it — portal used to bolt it on as
 # an override, which only newer Compose merges and which formula never got at all.
 #
+# What that sentence covers, precisely: the services DEFINED IN THIS FILE and in
+# docker-compose.observability.yml. Each product's OWN services carry their own policy, and
+# formula's (formula, race-sim, paddock) still carry none — so a host reboot brings the game's
+# identity and observability back but not the game. That is a gap in formula/docker-compose.yml,
+# stated here so this comment does not read as a claim about the whole estate.
+#
 # `unless-stopped`, not `always`: a container somebody stopped on purpose stays stopped across a
 # daemon restart — portal's ./e2e-saga-outage.sh depends on that, and an operator who stops the
 # broker to investigate expects it to stay down.
@@ -167,6 +173,11 @@ services:
     environment:
       PORT: "8091"
       IDP_ISSUER: http://localhost:8091
+      # Spelled out on BOTH sides of the contract rather than left to two defaults happening to
+      # agree. The allowlist added on 2026-07-28 closed an open redirect (and the header split it
+      # carried), but its default only matches security's default redirect_uri by coincidence —
+      # and coincidences do not survive a deployment where either side is configured.
+      IDP_REDIRECT_URIS: http://localhost:8080/oauth/callback
       IDP_CLIENT_ID: demo-client
       IDP_CLIENT_SECRET: ${IDP_CLIENT_SECRET:-demo-secret}
     healthcheck:
