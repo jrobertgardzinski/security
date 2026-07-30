@@ -16,6 +16,16 @@ on:
     branches: [ main ]
   pull_request:
   workflow_dispatch:
+  # Eight of the aggregated library repos — voting, config, password, email, constraint (repo
+  # "libs"), test-starter, adjustable-clock, infrastructure-micronaut-clock — carry no workflow
+  # of their own, and most of them cannot: their siblings' 1.0.0-SNAPSHOT artifacts exist only
+  # in this reactor, never in any registry, so a lone `mvn verify` in such a repo dies on a
+  # missing dependency. A push to any of the eight therefore triggers no CI anywhere, and a
+  # regression there used to surface only on the next unrelated push HERE — weeks later, with
+  # the culprit long merged. The nightly run bounds that silence to a day: every sub-repo is
+  # checked out at main and the full reactor runs WITH tests.
+  schedule:
+    - cron: '17 3 * * *'
 
 jobs:
   reactor:
@@ -25,78 +35,80 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout workspace (aggregator)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # The 13 aggregated sub-repos, each into the directory the aggregator pom expects.
-      # Pinned to main; a sub-repo feature branch is validated in its own repo's checks.
-      - uses: actions/checkout@v4
+      # Pinned to main. A sub-repo feature branch is validated in its own repo's checks — where
+      # it has any: eight of the thirteen have no workflow at all, which is what the schedule
+      # trigger above is for.
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/adjustable-clock
           path: adjustable-clock
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/infrastructure-micronaut-clock
           path: infrastructure-micronaut-clock
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/transactional-outbox
           path: transactional-outbox
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/infrastructure-spring-outbox
           path: infrastructure-spring-outbox
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/voting
           path: voting
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/offline-jwt
           path: offline-jwt
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/test-starter
           path: test-starter
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/libs   # the constraint lib lives in repo "libs"
           path: constraint
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/config
           path: config
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/email
           path: email
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/password
           path: password
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-security
           path: microservice-security
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-email
           path: microservice-email
           token: ${{ secrets.REPO_PAT }}
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -117,23 +129,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-idp
           path: microservice-idp
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-sms
           path: microservice-sms
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-push
           path: microservice-push
           token: ${{ secrets.REPO_PAT }}
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Stub IdP — the OIDC dance, the header-splitting guard and the code store's ceiling
@@ -152,75 +164,75 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout workspace (aggregator)
-        uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/adjustable-clock
           path: adjustable-clock
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/infrastructure-micronaut-clock
           path: infrastructure-micronaut-clock
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/transactional-outbox
           path: transactional-outbox
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/infrastructure-spring-outbox
           path: infrastructure-spring-outbox
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/voting
           path: voting
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/offline-jwt
           path: offline-jwt
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/test-starter
           path: test-starter
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/libs   # the constraint lib lives in repo "libs"
           path: constraint
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/config
           path: config
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/email
           path: email
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/password
           path: password
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-security
           path: microservice-security
           token: ${{ secrets.REPO_PAT }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: jrobertgardzinski/microservice-email
           path: microservice-email
           token: ${{ secrets.REPO_PAT }}
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -229,7 +241,7 @@ jobs:
         run: ./mvnw -B -q --no-transfer-progress -pl microservice-security/security-infrastructure -am package -DskipTests
 
       - name: Set up Node 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -251,7 +263,7 @@ jobs:
         working-directory: microservice-security/security-ui
       - name: Upload service/UI logs on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e2e-logs
           path: /tmp/*-e2e-*.log

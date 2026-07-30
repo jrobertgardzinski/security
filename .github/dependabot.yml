@@ -1,0 +1,46 @@
+version: 2
+
+# WHY THIS FILE EXISTS (2026-07-30) — see portal/.github/dependabot.yml for the full account.
+#
+# Short version: the images and action pins of this workspace were written from memory and watched by
+# nobody, so they froze at whatever "current" meant when the line was typed — postgres:16-alpine
+# (September 2023), apache/kafka:3.9.1, the Grafana/Prometheus/Loki/Tempo stack from mid-2024 — while
+# the Maven trees Dependabot DOES watch stayed on this year's releases. The contrast is the proof:
+# same author, and only the parts under a bot are current.
+#
+# Weekly, patches grouped into one pull request, minor and major left to a person. Limit 10.
+updates:
+  # This repository's own workflows (the aggregator CI and its nightly reactor).
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Warsaw
+    open-pull-requests-limit: 10
+    labels: ["dependencies"]
+    groups:
+      patches:
+        patterns: ["*"]
+        update-types: ["patch"]
+
+  # The identity and observability compose files.
+  #
+  # KNOWN LIMITATION, written down rather than assumed away: Dependabot's Docker Compose support
+  # looks for the CONVENTIONAL filenames (docker-compose.yml / compose.yml and their .yaml forms).
+  # The two files here are docker-compose.identity.yml and docker-compose.observability.yml — named
+  # for what they are, and included by each product's compose through `include:` — so this entry may
+  # well find nothing to watch. Renaming them would move a stack every script and both products'
+  # compose files refer to by name, which is a decision, not a side effect of an update. Until that
+  # decision is made, the images in these two files are still checked BY HAND — the entry stays so
+  # that the day the naming changes (or Dependabot's matching widens), it starts working by itself.
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Warsaw
+    open-pull-requests-limit: 10
+    labels: ["dependencies"]

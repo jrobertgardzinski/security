@@ -20,7 +20,7 @@ name: security
 services:
   prometheus:
     restart: unless-stopped
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v3.13.2
     command: ["--config.file=/etc/prometheus/prometheus.yml"]
     volumes:
       - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -30,7 +30,7 @@ services:
 
   loki:
     restart: unless-stopped
-    image: grafana/loki:3.1.0
+    image: grafana/loki:3.7.4
     command: ["-config.file=/etc/loki/config.yml"]
     volumes:
       - ./observability/loki-config.yml:/etc/loki/config.yml:ro
@@ -40,7 +40,7 @@ services:
 
   promtail:
     restart: unless-stopped
-    image: grafana/promtail:3.1.0
+    image: grafana/promtail:3.6.11
     command: ["-config.file=/etc/promtail/config.yml"]
     volumes:
       - ./observability/promtail-config.yml:/etc/promtail/config.yml:ro
@@ -55,7 +55,7 @@ services:
   # observability/otel (gitignored, 21 MB).
   tempo:
     restart: unless-stopped
-    image: grafana/tempo:2.5.0
+    image: grafana/tempo:2.9.4
     command: ["-config.file=/etc/tempo/config.yml"]
     volumes:
       - ./observability/tempo-config.yml:/etc/tempo/config.yml:ro
@@ -66,7 +66,7 @@ services:
 
   grafana:
     restart: unless-stopped
-    image: grafana/grafana:11.1.0
+    image: grafana/grafana:13.1.1
     environment:
       # anonymous admin is a DEV default; a public deployment flips GRAFANA_ANON=false
       # and sets GRAFANA_ADMIN_PASSWORD
@@ -86,7 +86,7 @@ services:
 
   cadvisor:
     restart: unless-stopped
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    image: gcr.io/cadvisor/cadvisor:v0.55.1
     privileged: true
     volumes:
       - /:/rootfs:ro
@@ -97,7 +97,7 @@ services:
 
   node-exporter:
     restart: unless-stopped
-    image: prom/node-exporter:v1.8.1
+    image: prom/node-exporter:v1.12.1
     command: ["--path.rootfs=/host"]
     pid: host
     volumes:

@@ -240,7 +240,7 @@ services:
   kafka:
     restart: unless-stopped
     # single-node KRaft — the event backbone (mail requests, the deletion saga, thread cascades)
-    image: apache/kafka:3.9.1
+    image: apache/kafka:4.3.1
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -276,7 +276,7 @@ services:
   # not broker settings. Idempotent: creating an existing topic is tolerated, and the --alter keeps
   # an already-created one honest.
   kafka-topics-init:
-    image: apache/kafka:3.9.1
+    image: apache/kafka:4.3.1
     depends_on:
       kafka:
         condition: service_healthy
@@ -300,7 +300,7 @@ services:
       - "8025:8025"   # web UI; SMTP (1025) stays internal
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
