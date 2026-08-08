@@ -28,3 +28,63 @@ groups:
           severity: warning
         annotations:
           summary: "Pamięć hosta powyżej 92% od 10 minut — stack zaraz zacznie polegać na swapie"
+
+  # ---------------------------------------------------------------------------------------------
+  # Usuwanie konta (RODO). Saga jest DWUFAZOWA (ADR 0007): uczestnik najpierw OZNACZA treść
+  # (PENDING_ERASURE — niewidoczna, nietknięta), a kasuje dopiero na komendę domknięcia. To, co ta
+  # konstrukcja kupuje — kompensację — kupuje też nowy tryb awarii, i on jest CICHY: jeśli komenda
+  # domknięcia zginie, treść zostaje ukryta i nieusunięta NA ZAWSZE. Nic się nie psuje, nic nie
+  # rzuca wyjątkiem, żaden probe nie czerwienieje — zapytanie po prostu zwraca mniej wierszy.
+  #
+  # Uczestnik z rozmysłu NIE kasuje po upływie czasu: to byłoby zgadywanie, co postanowił
+  # orkiestrator, a saga stojąca godzinę, bo padł sąsiad, wciąż może SKOMPENSOWAĆ. Jedyne, co czas
+  # kupuje w tym projekcie, to ten alarm — bez niego gauge jest linią na wykresie, na którą nikt
+  # nigdy nie spojrzy.
+  # ---------------------------------------------------------------------------------------------
+  - name: account-deletion
+    rules:
+      - alert: ErasureBacklogStuck
+        # jedna reguła na trzech uczestników: nazwy różnią się tylko prefiksem serwisu
+        # (memes_/comments_/collections_), więc dopasowanie po sufiksie obejmie też czwartego,
+        # gdyby kiedyś dołączył do sagi
+        expr: sum by (job) ({__name__=~".+_erasure_backlog"}) > 0
+        # 15 minut, nie natychmiast: próg zaległości w samych serwisach to 30 minut od oznaczenia,
+        # więc zanim ta metryka w ogóle urośnie, sprawa jest już dawno po czasie. Kwadrans zdejmuje
+        # migotanie po restarcie (gauge startuje z zera, a pierwszy przebieg ma minutę opóźnienia)
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }}: treść usuwanego konta jest UKRYTA, ale NIE WYMAZANA"
+          description: >-
+            Oznaczenia starsze niż jakakolwiek saga może trwać — komenda domknięcia
+            (ERASE_USER_CONTENT) nie doszła. NIC tego nie skasuje samo z siebie: kasowanie jest
+            wyzwalane stanem sagi, nigdy upływem czasu (ADR 0007). Przepchnąć sagę
+            z microservice-offboarding albo ją skompensować. To obowiązek prawny, nie porządki.
+
+      - alert: OffboardingSagaCompensated
+        # kompensacja jest od 2026-08-08 UCZCIWA (treść naprawdę wraca), ale nadal znaczy:
+        # usunięcie konta się NIE udało, użytkownik dostał przeprosiny i musi poprosić jeszcze raz.
+        # Zdarzenie z definicji rzadkie, więc warto zobaczyć każde
+        expr: increase(offboarding_sagas_compensated_total[15m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Portal poddał się przy usuwaniu konta ({{ $value }} w ostatnim kwadransie)"
+          description: >-
+            Któryś uczestnik nie potwierdził w budżecie ponowień. Konto odblokowane, treści
+            przywrócone, użytkownik dostał list „nie udało się" — czyli wniosek RODO NIE został
+            zrealizowany i ktoś musi się dowiedzieć dlaczego.
+
+      - alert: SagaRecordsDropped
+        # rekord porzucony po wyczerpaniu budżetu = jedna komenda sagi, której ten serwis nigdy nie
+        # wykonał. Licznik istnieje w memes, comments i collections — i nikt na niego nie patrzył
+        expr: increase({__name__=~".+_kafka_records_dropped_total"}[15m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} porzucił komendę sagi po wyczerpaniu budżetu ponowień"
+          description: >-
+            Baza albo broker były niedostępne dłużej niż budżet. Jeśli to była komenda
+            oznaczenia — saga zaraz skompensuje. Jeśli domknięcia — treść zostaje ukryta
+            i nieusunięta, a za kwadrans powie o tym ErasureBacklogStuck.
