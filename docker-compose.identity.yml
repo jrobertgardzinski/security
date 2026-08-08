@@ -82,6 +82,12 @@ services:
       # the per-IP registration throttle (default 5/15min) would trip on the smoke test, which
       # registers a handful of accounts from one host in minutes — keep the guard on, but roomy
       SECURITY_REGISTRATION_MAX_PER_WINDOW: "100"
+      # the SAME reasoning one door further: step-up is throttled 10/15min per source, and every
+      # e2e scenario that seeds an account now buys TWO elevations (one to enrol a factor, one to
+      # mint recovery codes — they are keyed by action, so one does not open the other). Eighteen
+      # scenarios from one host tripped it at 429 and the suite blocked ITSELF, exactly as the
+      # brute-force counter once did. The guard stays on, roomy, and only in the dev stack.
+      SECURITY_STEP_UP_MAX_PER_WINDOW: "100"
       # social login: the provider named "google" points at the stub IdP here; production swaps
       # these URLs/credentials for the real thing and the dance never changes. authorize-url is
       # what the BROWSER visits (host-published port), token/userinfo are called server-side.
