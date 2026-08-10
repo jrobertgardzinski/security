@@ -182,6 +182,15 @@ their repos, this page is the spec surface you can diff in one glance.
 
 - REVOKING all sessions ends every session of the USER
 
+**The cast of the estate — GUEST, USER, MODERATOR, ADMIN** — `shared/microservice-security/specs/roles.feature`
+
+> Identity's ladder, spoken once for every product. A GUEST is whoever carries no identity: security never meets them, and what a GUEST may see is each product's own rule. Signing in makes a USER, and every USER holds the USER role. MODERATOR and ADMIN are granted on top — only by an ADMIN's hand — and the who-am-I resource reports the caller's ROLES, so every other service can gate on them without guessing.
+
+- A fresh USER is only a USER
+- An ADMIN grants a ROLE, and from then on it is reported to every service that asks
+- Granting ROLES is an ADMIN's hand alone
+- A ROLE cannot be pinned on a USER who does not exist
+
 **Verifying an email address** — `shared/microservice-security/specs/verify-email.feature`
 
 > A USER proves they own their EMAIL by following a verification link sent to it. The link carries a single-use VERIFICATION TOKEN; the matching token marks the EMAIL as verified, and an unknown token is rejected.
@@ -189,15 +198,6 @@ their repos, this page is the spec surface you can diff in one glance.
 - The VERIFICATION TOKEN from the link verifies the EMAIL
 - An unknown VERIFICATION TOKEN is rejected
 - Registration automatically starts VERIFICATION
-
-**Roles** — `shared/microservice-security/security-infrastructure/src/test/resources/roles.feature`
-
-> Every signed-in USER holds the USER role; an ADMIN may grant MODERATOR or ADMIN on top, and a protected who-am-I resource reports the caller's roles so other services can gate on them.
-
-- a fresh USER is only a USER
-- an ADMIN GRANTS a ROLE and it shows up
-- a non-admin cannot GRANT ROLES
-- GRANTING ROLES to an unknown USER is refused
 
 ## portal
 
