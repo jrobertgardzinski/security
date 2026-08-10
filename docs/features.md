@@ -182,9 +182,9 @@ their repos, this page is the spec surface you can diff in one glance.
 
 - REVOKING all sessions ends every session of the USER
 
-**The cast of the estate — GUEST, USER, MODERATOR, ADMIN** — `shared/microservice-security/specs/roles.feature`
+**Granting and reporting ROLES** — `shared/microservice-security/specs/roles.feature`
 
-> Identity's ladder, spoken once for every product. A GUEST is whoever carries no identity: security never meets them, and what a GUEST may see is each product's own rule. Signing in makes a USER, and every USER holds the USER role. MODERATOR and ADMIN are granted on top — only by an ADMIN's hand — and the who-am-I resource reports the caller's ROLES, so every other service can gate on them without guessing.
+> Security's duty behind every door in the estate: say who the caller is. The who-am-I resource reports the caller's ROLES, so every other service can gate on them without guessing — and this is where the ladder the products speak starts. A GUEST carries no identity and never reaches security at all; what a GUEST may see is each product's own rule. Signing in makes a USER, and every USER holds the USER role. MODERATOR and ADMIN are granted on top, only by an ADMIN's hand.
 
 - A fresh USER is only a USER
 - An ADMIN grants a ROLE, and from then on it is reported to every service that asks
