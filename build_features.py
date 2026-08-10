@@ -50,7 +50,9 @@ def parse_feature(path):
         if m:
             in_description = False
             in_legend = False
-            if m.group(1) != "Background":
+            # unnamed entries (the anonymous "Example:" under a Rule) carry no words of their
+            # own — the Rule's title stands for them, so listing them would be pure noise
+            if m.group(1) != "Background" and m.group(2).strip():
                 scenarios.append((m.group(1), m.group(2).strip(), pending_tags))
             pending_tags = []
             continue
