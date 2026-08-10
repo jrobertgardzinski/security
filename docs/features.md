@@ -227,16 +227,16 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Adding a COMMENT** — `portal/microservice-comments/specs/add-comment.feature`
 
-> Signed-in USERS discuss under an existing MEME. The COMMENT's author is the identity the security service confirmed, never a field of the request — reading the portal is public, so writing is where the door is guarded. And a COMMENT is a remark, not an essay: the THREAD stays a conversation, not a blog.
+> USERS discuss under an existing MEME: a GUEST reads, writing takes a USER, and every COMMENT is signed by who really wrote it — nobody puts words in someone else's mouth. A COMMENT is a remark, not an essay: the THREAD stays a conversation, not a blog.
 
-- A signed-in USER comments under a MEME that exists
-- Without signing in there is no commenting
+- A USER comments under a MEME that exists
+- A GUEST may read, not write
 - A COMMENT needs a real MEME to hang under
 - A COMMENT is a remark, not an essay
 
 **Deleting a COMMENT** — `portal/microservice-comments/specs/delete-comment.feature`
 
-> A COMMENT belongs to its author: the author may take their own words down, a stranger may not, and a MODERATOR — a role the security service vouches for — may take down anyone's. A single deletion is nobody else's business: no cascade is announced for it.
+> A COMMENT belongs to its author: the author may take their own words down, a stranger may not, and a MODERATOR may take down anyone's. A single deletion is nobody else's business: no cascade is announced for it.
 
 - The author takes their own COMMENT down; a stranger cannot
 - A MODERATOR takes down anyone's COMMENT
@@ -250,15 +250,15 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Hiding a COMMENT** — `portal/microservice-comments/specs/hide-comment.feature`
 
-> Moderation that can change its mind: instead of deleting, a MODERATOR hides a COMMENT. Readers see a tombstone without the words, the author still sees their own — marked hidden — and revealing brings the words back. Hiding is a MODERATOR's call, and it must be a decision, not a shrug.
+> Moderation that can change its mind: instead of deleting, a MODERATOR hides a COMMENT. A GUEST sees a tombstone without the words, the author still sees their own — marked hidden — and revealing brings the words back. Hiding is a MODERATOR's call, and it must be a decision, not a shrug.
 
-- Hidden for readers, never for the author — and reversible
+- Hidden for a GUEST, never for the author — and reversible
 - Hiding is a MODERATOR's call
 - Hiding needs an unambiguous decision
 
 **Reading a THREAD** — `portal/microservice-comments/specs/list-comments.feature`
 
-> Reading is public: anyone browses a MEME's THREAD one page at a time. The listing guards privacy — a COMMENT is signed with a masked name and the full address never leaves the service — while the author still recognises their own words. VOTES are a side dish: when the tally is unavailable, the THREAD still reads.
+> Reading is public: a GUEST browses a MEME's THREAD one page at a time. The listing guards privacy — a COMMENT is signed with a masked name and the full address never leaves the portal — while the author still recognises their own words. VOTES are a side dish: when the tally is unavailable, the THREAD still reads.
 
 - A long THREAD is read one page at a time — every COMMENT exactly once
 - The listing signs a COMMENT with a masked name
@@ -283,7 +283,7 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **The purge-policy default is an ADMIN's dial** — `portal/microservice-memes/specs/admin-purge-policy.feature`
 
-> What happens to a leaver's memes is deployment policy — but policy changes faster than deployments. An ADMIN may override the env default at runtime; the leaver's own wizard choice still wins over everything. Everyone else is refused at the door.
+> What happens to a leaver's memes is deployment policy — but policy changes faster than deployments. An ADMIN may re-dial the default at runtime; the leaver's own wizard choice still wins over everything. Everyone else is refused at the door.
 
 - The ADMIN's override wins over the deployment default, and the purge obeys it
 - A plain USER may not touch the dial
@@ -291,12 +291,12 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Deleting a MEME** — `portal/microservice-memes/specs/delete-meme.feature`
 
-> A MEME belongs to its uploader, who may delete it; a MODERATOR — a role microservice-security reports for the caller — may delete anyone's MEME. Everyone else is refused. And a deletion means it: afterwards not a byte remains, in any form the service ever made.
+> A MEME belongs to its uploader, who may delete it; a MODERATOR may delete anyone's MEME. Everyone else is refused. And a deletion means it: afterwards not a byte remains, in any form the service ever made.
 
 - A stranger cannot delete someone else's MEME
 - The author deletes their own MEME
 - A MODERATOR deletes anyone's MEME
-- Without signing in there is no deleting
+- A GUEST may look, not delete
 - After a deletion not a byte of the MEME remains
 
 **Flagging a MEME as NSFW** — `portal/microservice-memes/specs/flag-meme.feature`
@@ -316,20 +316,20 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Uploading a MEME** — `portal/microservice-memes/specs/upload-meme.feature`
 
-> Signed-in USERS upload images; a MEME is stored optimised for the browser. Browsing is public: anyone can fetch a MEME, its thumbnail, or the gallery without signing in. And the door checks what it is handed — a file that is not an honest image is turned away politely, never crashed on.
+> A GUEST browses freely — the gallery, every MEME, every thumbnail; uploading takes a USER. A MEME is stored optimised for the browser, and the door checks what it is handed — a file that is not an honest image is turned away politely, never crashed on.
 
 - An uploaded MEME is public to fetch, thumbnail and all
 - The gallery lists the MEME publicly
-- Without signing in there is no uploading
+- A GUEST may browse, not upload
 - A file that is not an honest image is turned away, not crashed on
 
 **Voting on a MEME** — `portal/microservice-memes/specs/vote-meme.feature`
 
-> Signed-in USERS vote on a MEME; each USER has ONE VOTE per MEME, worked as a toggle: repeating the same VOTE retracts it, the opposite direction switches it. An up-voted MEME becomes a higher-scoring MEME in the public hot list.
+> USERS vote on a MEME (a GUEST only watches); each USER has ONE VOTE per MEME, worked as a toggle: repeating the same VOTE retracts it, the opposite direction switches it. An up-voted MEME becomes a higher-scoring MEME in the public hot list.
 
 - The MEME with more distinct up-voters ranks higher
 - Repeating the same VOTE retracts it
-- Without signing in there is no voting
+- A GUEST may watch, not vote
 
 **Leaving — deleting the account, content and all** — `portal/microservice-memes/memes-ui/e2e/features/account-deletion.feature`
 
@@ -373,7 +373,7 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Beginning the offboarding — a deletion FACT opens a CASE** — `portal/microservice-offboarding/specs/begin-offboarding.feature`
 
-> The portal's process manager for account deletion, extracted from the identity service so identity stays reusable. Security announces the FACT that an account requested deletion; this service opens a CASE and commands every configured content participant to PURGE — reserve the leaver's content, ready to be erased for good or brought back. Commands are idempotent BY DEFAULT (workspace ADR 0006 — enforced by the generic IdempotentCommandsTest, not restated per scenario); the scenarios pin the message choreography.
+> When an account leaves, the portal cleans up after it. Security announces the FACT that the account requested deletion; this service opens a CASE and commands every content participant to PURGE — set the leaver's content aside, ready to be erased for good or brought back. The scenarios pin the message choreography, and every command may safely arrive twice.
 
 - A deletion FACT commands the content PURGE
 - The leaver's choices ride the command untouched
@@ -419,11 +419,11 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Listing a COLLECTION** — `portal/microservice-user-collections/specs/list-items.feature`
 
-> A COLLECTION belongs to one person and one name: alice's "favourites" is not bob's, and not alice's "watchlist". The listing shows the newest save first, and without a signed-in identity there is no listing at all.
+> A COLLECTION belongs to one USER and one name: alice's "favourites" is not bob's, and not alice's "watchlist". The listing shows the newest save first, and a GUEST gets no listing at all.
 
 - The newest save is listed first
 - COLLECTIONS are per person and per name
-- Without an identity there are no COLLECTIONS
+- For a GUEST there are no COLLECTIONS
 
 **Removing a REFERENCE** — `portal/microservice-user-collections/specs/remove-item.feature`
 
@@ -434,7 +434,7 @@ their repos, this page is the spec surface you can diff in one glance.
 
 **Saving a REFERENCE** — `portal/microservice-user-collections/specs/save-item.feature`
 
-> A signed-in person saves an opaque REFERENCE — a meme, a comment — into a named COLLECTION. The service keeps the REFERENCE and nothing else: it never interprets what it points at. Saving is idempotent BY DEFAULT (workspace ADR 0006 — enforced by the generic IdempotentCommandsTest, not restated per scenario); the scenarios below pin the REPLY a caller can lean on.
+> A USER saves an opaque REFERENCE — a meme, a comment — into a named COLLECTION. The service keeps the REFERENCE and nothing else: it never interprets what it points at. Saving twice is safe by the workspace's standing law (ADR 0006); the scenarios below pin the REPLY a caller can lean on.
 
 - A saved REFERENCE lands in the COLLECTION
 - Saving twice is not an error — the caller is told it was already there
