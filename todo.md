@@ -748,3 +748,52 @@ Szczegóły każdego punktu: microservice-security/todo.md (wpisy OAuth/MFA/step
   wydarzenia z RSVP; tożsamość przez introspekcję w security; Postgres+Flyway (H2 bez
   DB_URL); wpięty w compose (:8086). Backlog w microservice-paddock/todo.md (wydarzenia
   wywiedzione ze stanu gry, feed aktywności z powtórkami, rejestr→provision, powiadomienia).
+
+## Konfiguracja — drabinka i profile (werdykty właściciela, 2026-08-23)
+
+Zrobione tego dnia (config, password, microservice-security, microservice-email,
+portal: memes/comments/offboarding/user-collections, compose oba, k8s/base):
+
+- **Taksonomia nazw = koszt zmiany** (komplet 2): `RebuildConfigKey` / `RestartConfigKey` /
+  `LiveConfigKey`, źródła `Rebuild/Restart/LiveConfigSource`, porty `Restart/LiveConfigPort`,
+  dekorator `CachingLiveConfigPort`, fabryki drabinki `ConfigLadder.live/restart` (poziom =
+  najwyższy dostępny szczebel). Port mówi semantykę (koszt zmiany), adapter technologię.
+- **Prawo precedencji**: wygrywa źródło wiązane najpóźniej; rozstrzygnięcie jest funkcją
+  odczytu, nie mutacją; kolejność szczebli NIEREPREZENTOWALNA w API; default obowiązkowy,
+  walidowany zachłannie; bramka pomija nielegalny szczebel z logiem; app.props ≡ env vars
+  (jeden szczebel Restart — mini-drabinką env>yml rządzi framework, nie my).
+- **`ConfigRequirement`** (wariant B): klucz obowiązkowy TYLKO z restart-source, bez defaultu,
+  zachłanny resolve w composition root; mandatory-z-bazy i mandatory-hardcoded celowo
+  niereprezentowalne (bootstrap + nierestartowalna flota / stała). Hybryda „wymagane w props
+  + żywe nadpisanie z DB" = requirement pod drabinką, gdy zajdzie potrzeba.
+- **Meta-konfiguracja szczebel niżej**: TTL cache'a ustawień (`security.settings.cache.ttl.seconds`,
+  default 10 s, 0 = wyłączony) jest Restart-level, żeby nie opóźniał własnej naprawy.
+- **Klucze po kropkach**: `security.password.policy.min.length` (preferencja właściciela).
+- **Baza/profil ortogonalne do drabinki**: bazowy plik = inwarianty serwisu, profil = decyzje
+  środowiska; test: „różnica między środowiskami to bug czy decyzja?".
+- **Strażnik profilu (default-deny)**: odmowa startu bez dokładnie jednego z {dev,test,prod}
+  na ścieżce PRODUKCYJNEJ (main / start kontenera); testy wchodzą inną ścieżką i przechodzą.
+  Smaki: Micronaut security = statyczny guard w App.main (bean-graf umierał na wstrzykiwaniu
+  ZANIM bean-strażnik przemówił — listener offboardingu aktywny poza test bez DataSource);
+  Quarkus email = @Observes StartupEvent, tryb NORMAL wymaga jawnego QUARKUS_PROFILE (compose
+  i k8s deklarują prod, który dotąd był domyślny po cichu); Spring memes/comments = listener
+  dodany w main; Helidon offboarding/user-collections = COLLECTIONS_PROFILE / OFFBOARDING_PROFILE
+  sprawdzane na czele main. Compose i k8s/base niosą profile jawnie.
+- **Bezpiecznik credentiali** (security): pod zadeklarowanym prod `CredentialsFuse` (@Context,
+  @Requires(env="prod")) żąda jawnego hasła datasource i odrzuca dev-defaulty {postgres, secret};
+  nierozwiązywalny placeholder ${DB_PASSWORD} = „nieustawione" z komunikatem operatorskim.
+  Reguła: default wolno dać, gdy nie jest sekretem I nie może po cichu zadziałać w złym środowisku.
+- **Prawo prawdomówności portów** (`ConfigPortsTellTheTruthTest`, obok StoresWithADeadline…):
+  implementacje RestartConfigPort nie widzą bazy, implementacje LiveConfigPort nie czytają
+  Environment — skan źródeł, bo kompilator semantyki kosztu zmiany nie sprawdzi.
+- **Vault/Config Server** (SMiA): to transport/właściciel szczebli, nie nowy szczebel — config
+  server bez refresha = Restart scentralizowany, z busem = Live push, Vault = Requirement jako
+  usługa + rotacja (strona trzecia przecina samoodniesienie credentiali).
+
+OTWARTE po tej rundzie:
+- ADR o taksonomii Rebuild/Restart/Live + strażnikach (spisać w konwencji repo — właściciel).
+- Stuby Pythona (image-encoder, idp, sms, push) bez strażnika profilu — zdecydować, czy go chcą.
+- InMemoryProcessedOutcomes nie istnieje: start security poza test bez DataSource umiera na
+  wstrzykiwaniu (dziś maskowane przez guard w main) — rozważyć twina albo @Requires dla listenera.
+- Rozszerzenia taksonomii na przyszłość (slajd, nie kod): zasięg per rola/tenant, kierunek
+  nadpisania (tylko zaostrzanie), push zamiast TTL-pull.

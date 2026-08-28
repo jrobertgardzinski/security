@@ -150,6 +150,11 @@ services:
     environment:
       <<: *otel-agent
       OTEL_SERVICE_NAME: email
+      # the profile this stack always ran under — implicitly, as the Quarkus fallback. The
+      # service's ProfileGuard now refuses an UNDECLARED start (a start nobody decided), so the
+      # decision moves here, where it was being made all along: prod defaults (real STARTTLS),
+      # with Mailpit opted out explicitly below.
+      QUARKUS_PROFILE: prod
       MAIL_API_KEY: ${MAIL_API_KEY:-local-dev-key}
       QUARKUS_MAILER_HOST: mailpit
       QUARKUS_MAILER_PORT: "1025"
