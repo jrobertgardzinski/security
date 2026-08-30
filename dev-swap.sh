@@ -39,7 +39,7 @@ jar_of() {
         comments)         ls "$here"/../portal/microservice-comments/target/*.jar 2>/dev/null | grep -v -- '-sources\|original' | head -1 ;;
         user-collections) ls "$here"/../portal/microservice-user-collections/target/*.jar 2>/dev/null | grep -v -- '-sources\|original' | head -1 ;;
         offboarding)      ls "$here"/../portal/microservice-offboarding/target/*.jar 2>/dev/null | grep -v -- '-sources\|original' | head -1 ;;
-        security)         ls "$here"/microservice-security/security-infrastructure/target/*-all.jar "$here"/microservice-security/security-infrastructure/target/*.jar 2>/dev/null | grep -v -- '-sources\|original' | head -1 ;;
+        security)         echo "$here/microservice-security/security-infrastructure/target/security-infrastructure-1.0.0-SNAPSHOT.jar" ;;
         email)            echo "$here/microservice-email/target/quarkus-app/quarkus-run.jar" ;;
         *)                echo "" ;;
     esac
@@ -66,5 +66,9 @@ if [ "$mode" = run ]; then
     echo
     echo "running $jar"
     set -a; . "$env_file"; set +a
-    exec java -jar "$jar"
+    case "$service" in
+        # security is not a fat jar: its Dockerfile runs the classes with target/lib on the classpath
+        security) exec java -cp "$jar:$(dirname "$jar")/lib/*" com.jrobertgardzinski.App ;;
+        *)        exec java -jar "$jar" ;;
+    esac
 fi
