@@ -80,7 +80,8 @@ http://localhost:8083/ (browsing is public; sign-up/sign-in goes through
 security; signed-in users upload, vote and star favourites).
 
 ```bash
-./infra-up.sh      # package the jars, build the images, start everything
+./infra-up.sh      # package the jars, build the images, start the SYSTEM
+./infra-up.sh --observability   # ...plus the monitoring context (a compose profile) and the OTel agent
 ./infra-smoke.sh   # end-to-end proof: register -> mail -> verify -> sign-in,
                    # meme upload, deletion saga, favourites CORS
 ./infra-down.sh    # stop (add -v to drop the database volumes)

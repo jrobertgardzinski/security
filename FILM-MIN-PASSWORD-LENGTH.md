@@ -12,12 +12,8 @@ cd ~/Documents/git/portal && ./infra-up.sh
 Buduje jary (`shared` install + portal package) i podnosi portal razem ze stackiem tożsamości
 (security, email, Mailpit, Kafka, Postgres) jako projekt compose `security`. Formula nie jest potrzebna.
 
-Na **Docker Desktop** (kontekst `desktop-linux`) `node-exporter` nie wstaje (`/:/host rslave` — VM nie ma
-shared mountu) i zrywa resztę `up`. Wtedy po `infra-up.sh` dociągnij pozostałe serwisy bez niego:
-
-```bash
-docker compose up -d $(docker compose config --services | grep -v '^node-exporter$')
-```
+Observability (Grafana, Prometheus, Tempo, node-exporter…) to osobny kontekst — profil compose,
+domyślnie wyłączony; do filmu niepotrzebny. Włącza go `./infra-up.sh --observability`.
 
 Systemowy `dockerd` (kontekst `default`) jest wyłączony (2026-08-30), żeby nie dublował stacku i portów.
 

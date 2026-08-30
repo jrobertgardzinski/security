@@ -9,6 +9,14 @@
 # Included by the product composes (portal/, formula/) alongside the identity stack;
 # the config paths below are relative to THIS file, so they resolve into
 # shared/observability/ wherever the including compose lives.
+#
+# A CONTEXT, not a default: every service here carries `profiles: [observability]`, so a plain
+# `docker compose up -d` brings up the system alone and `docker compose --profile observability
+# up -d` (or COMPOSE_PROFILES=observability, or the up-scripts' --observability flag) adds this
+# whole file. The OTel agent in the JVM services is switched on by the same flag — see the
+# x-otel-agent anchor in the identity compose. node-exporter and cadvisor read the HOST
+# (/proc, /sys, /var/lib/docker): fine on a Linux server, meaningless inside Docker Desktop's VM,
+# where node-exporter's rslave mount does not even start — one more reason this is opt-in.
 
 #
 # RESTART POLICY: `unless-stopped` on every service, for the reason spelled out in
@@ -19,6 +27,7 @@ name: security
 
 services:
   prometheus:
+    profiles: [observability]
     restart: unless-stopped
     image: prom/prometheus:v3.13.2
     command: ["--config.file=/etc/prometheus/prometheus.yml"]
@@ -29,6 +38,7 @@ services:
       - "9090:9090"
 
   loki:
+    profiles: [observability]
     restart: unless-stopped
     image: grafana/loki:3.7.4
     command: ["-config.file=/etc/loki/config.yml"]
@@ -39,6 +49,7 @@ services:
       - "3100:3100"
 
   promtail:
+    profiles: [observability]
     restart: unless-stopped
     image: grafana/promtail:3.6.11
     command: ["-config.file=/etc/promtail/config.yml"]
@@ -54,6 +65,7 @@ services:
   # trace spans the whole saga. The agent jar is fetched by the product up-scripts into
   # observability/otel (gitignored, 21 MB).
   tempo:
+    profiles: [observability]
     restart: unless-stopped
     image: grafana/tempo:2.9.4
     command: ["-config.file=/etc/tempo/config.yml"]
@@ -65,6 +77,7 @@ services:
       - "4318:4318"   # OTLP/HTTP receiver
 
   grafana:
+    profiles: [observability]
     restart: unless-stopped
     image: grafana/grafana:13.1.1
     environment:
@@ -85,6 +98,7 @@ services:
       - tempo
 
   cadvisor:
+    profiles: [observability]
     restart: unless-stopped
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     privileged: true
@@ -96,6 +110,7 @@ services:
       - /dev/disk:/dev/disk:ro
 
   node-exporter:
+    profiles: [observability]
     restart: unless-stopped
     image: prom/node-exporter:v1.12.1
     command: ["--path.rootfs=/host"]
