@@ -35,6 +35,8 @@
 #   8082  microservice-email     (POST /mails*, X-Api-Key required)
 #   8091  idp                    (stub OIDC provider: social login without Google)
 #   8025  Mailpit web UI         (the "inbox" for verification/reset links)
+#   5433  Postgres (security)    (psql -h localhost -p 5433 -U postgres security; 5432 is left
+#                                 to a host-installed Postgres)
 #   ----  sms / push             (internal notification channels; stub-send by default)
 
 name: security
@@ -88,6 +90,12 @@ services:
       # scenarios from one host tripped it at 429 and the suite blocked ITSELF, exactly as the
       # brute-force counter once did. The guard stays on, roomy, and only in the dev stack.
       SECURITY_STEP_UP_MAX_PER_WINDOW: "100"
+      # the first ADMIN: nobody can grant a role until someone holds one, and the dev stack has no
+      # console to hand it out — the bootstrap list is the only way in (register + verify as usual)
+      SECURITY_BOOTSTRAP_ADMINS: admin@example.com
+      # live settings (min password length) are read through a 10 s cache by default; in the dev
+      # stack a change made a second ago should be visible now, not after a pause — cache off
+      SECURITY_SETTINGS_CACHE_TTL_SECONDS: "0"
       # social login: the provider named "google" points at the stub IdP here; production swaps
       # these URLs/credentials for the real thing and the dance never changes. authorize-url is
       # what the BROWSER visits (host-published port), token/userinfo are called server-side.
@@ -313,6 +321,8 @@ services:
   postgres:
     image: postgres:18-alpine
     restart: always
+    ports:
+      - "5433:5432"   # host access for a console session; 5432 stays free for a local Postgres
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
       POSTGRES_DB: security
