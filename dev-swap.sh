@@ -12,8 +12,8 @@
 # service cannot tell where it runs. Every compose in the estate joins the "security" project,
 # so the script is the same whichever workspace it lives in (portal/ links to this file).
 #
-# Known limit: containers that call the swapped service BY NAME (comments -> memes:8083) will not
-# find the host process; the browser and every other host process will. Kafka traffic is unaffected.
+# Containers dial the swappable services via host.docker.internal:<published port> (see the
+# compose files), so a client cannot tell whether the service lives in Docker or in the IDE.
 set -euo pipefail
 
 usage() { sed -n '2,15p' "$0"; exit 1; }
