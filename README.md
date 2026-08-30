@@ -88,7 +88,13 @@ security; signed-in users upload, vote and star favourites).
 
 Ports: security 8080, email 8082, memes 8083 (gallery UI), formula 8084 (race
 viewer), comments 8085, paddock 8086, user-collections 8092, collections-ui 8093,
-offboarding 8094, Mailpit UI 8025, Grafana 3000. The full map lives in
+offboarding 8094, Mailpit UI 8025, Grafana 3000. The internal wiring is published
+too (security's Postgres 5433, Kafka's host listener 29092, Mailpit SMTP 1025,
+sms 8088, push 8089) so that ONE service can run from the IDE against the rest:
+`./dev-swap.sh security` stops the container and prints the env from
+`dev/local/security.env` to paste into the Run Configuration; `./dev-swap.sh back
+security` brings the container back. Same script for the portal services from
+`../portal` (their env files live there). The full map lives in
 [docs/onboarding-guide.md](docs/onboarding-guide.md) and the generated
 [C4 diagrams](docs/c4-architecture.md).
 
