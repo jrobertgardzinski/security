@@ -1,0 +1,4 @@
+.venv/
+shots/
+compose.override.yml
+.ipynb_checkpoints/
