@@ -52,7 +52,7 @@ Wszystko JSON, `Content-Type: application/json`. `$SEC=http://localhost:8080`.
 ```
 POST /register            {"email": "...", "password": "..."}
   201  {"status": "REGISTERED"...}   — mail z linkiem w Mailpit
-  422  {"emailErrors": [], "passwordErrors": [{"MIN_LENGTH_NOT_MET": 10}, {"DIGIT_REQUIRED": true}]}
+  422  {"emailErrors": [{"DOMAIN_MISSING_DOT": true}], "passwordErrors": [{"MIN_LENGTH_NOT_MET": 10}, {"DIGIT_REQUIRED": true}]}
   429  {"error": "TOO_MANY_REGISTRATIONS"} + Retry-After
 ```
 Parametr przy `MIN_LENGTH_NOT_MET` to minimum **obowiązujące w tej próbie** — to jest scena „system mierzy nową miarą".
