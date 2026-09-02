@@ -1,0 +1,7 @@
+# Sub-repositories of workspace-portal (the social PORTAL product): <directory> <git url>.
+microservice-memes              https://github.com/jrobertgardzinski/microservice-memes.git
+microservice-comments           https://github.com/jrobertgardzinski/microservice-comments.git
+microservice-user-collections   https://github.com/jrobertgardzinski/microservice-user-collections.git
+microservice-offboarding        https://github.com/jrobertgardzinski/microservice-offboarding.git
+# Python image service (private repository)
+microservice-image              https://github.com/jrobertgardzinski/microservice-image.git

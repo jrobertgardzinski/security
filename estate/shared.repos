@@ -1,0 +1,19 @@
+# Sub-repositories of workspace-shared (the SHARED KERNEL): <directory> <git url>.
+# Note the one directory whose name differs from its GitHub repo: constraint <- libs.
+test-starter                    https://github.com/jrobertgardzinski/test-starter.git
+constraint                      https://github.com/jrobertgardzinski/libs.git
+config                          https://github.com/jrobertgardzinski/config.git
+adjustable-clock                https://github.com/jrobertgardzinski/adjustable-clock.git
+infrastructure-micronaut-clock  https://github.com/jrobertgardzinski/infrastructure-micronaut-clock.git
+transactional-outbox            https://github.com/jrobertgardzinski/transactional-outbox.git
+infrastructure-spring-outbox    https://github.com/jrobertgardzinski/infrastructure-spring-outbox.git
+offline-jwt                     https://github.com/jrobertgardzinski/offline-jwt.git
+voting                          https://github.com/jrobertgardzinski/voting.git
+email                           https://github.com/jrobertgardzinski/email.git
+password                        https://github.com/jrobertgardzinski/password.git
+microservice-security           https://github.com/jrobertgardzinski/microservice-security.git
+microservice-email              https://github.com/jrobertgardzinski/microservice-email.git
+# Python channel / identity stubs (private repositories: sign in with `gh auth login` first)
+microservice-idp                https://github.com/jrobertgardzinski/microservice-idp.git
+microservice-sms                https://github.com/jrobertgardzinski/microservice-sms.git
+microservice-push               https://github.com/jrobertgardzinski/microservice-push.git

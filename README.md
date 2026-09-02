@@ -19,6 +19,35 @@ Python `race-sim`) are separate beings that share only **identity**
 [C4 diagrams](docs/c4-architecture.md) draw that boundary and the generator
 enforces it.
 
+## Getting started on a fresh machine
+
+The estate is three sibling workspaces (`shared`, `portal`, `formula`) holding 27 independent
+git repositories between them. One script clones and keeps all of them; its map is data in
+[`estate/`](estate/) (one `<directory> <url>` line per repository).
+
+```bash
+# prerequisites: git, JDK 25, Docker with compose, Node 20+ (the React UIs), Python 3 (the stubs),
+# and the GitHub CLI signed in — seven repositories are private
+gh auth login
+
+mkdir -p ~/Documents/git && cd ~/Documents/git
+git clone https://github.com/jrobertgardzinski/workspace-shared.git shared
+./shared/estate.sh clone          # clones portal/, formula/ and every sub-repository that is missing
+cd shared && ./mvnw install       # the kernel first; the products consume it from ~/.m2
+```
+
+Day to day:
+
+```bash
+./estate.sh status [--fetch]      # one line per repository: branch, ahead/behind, dirty files
+./estate.sh pull                  # fast-forward every clean repository; dirty ones are listed, not touched
+./estate.sh check                 # the map must match the territory: manifests vs disk vs .gitignore
+```
+
+Adding a repository: create it on GitHub, clone it into the right workspace, add its line to the
+workspace's `.gitignore` and to `estate/<workspace>.repos`; `./estate.sh check` tells you if you
+forgot one of the two.
+
 ## Projects
 
 Build order is computed automatically by the Maven reactor; the natural

@@ -1,0 +1,5 @@
+# Sub-repositories of workspace-formula (the F1 GAME product): <directory> <git url>.
+# All three are private repositories: sign in with `gh auth login` first.
+formula-simulator               https://github.com/jrobertgardzinski/formula-simulator.git
+formula-sdk                     https://github.com/jrobertgardzinski/formula-sdk.git
+microservice-paddock            https://github.com/jrobertgardzinski/microservice-paddock.git

@@ -24,7 +24,8 @@ and the Python channel/identity stubs (`microservice-idp`, `microservice-sms`,
 `microservice-push`). Each sub-directory has its **own `.git`, history and
 remote** and is gitignored here. This repo versions only the aggregating
 `pom.xml` (a pure aggregator, **not** a parent pom), the identity/observability
-compose files, the cross-estate tooling (`infra-smoke.sh`, `aggregate_allure.py`,
+compose files, the cross-estate tooling (`estate.sh` + its map in `estate/*.repos` — clone/pull/status/check
+for all 27 repositories; `infra-smoke.sh`, `aggregate_allure.py`,
 `build_features.py`, `build_javadocs.sh`, `build_c4.py`, `allure-serve.sh`) and shared docs
 (`docs/`, `todo.md` — the cross-project backlog lives here).
 
@@ -49,6 +50,9 @@ players and its `infra` pulls live game state from the instances.
 
 ## Working across repos — important
 
+- A new sub-repo goes into BOTH the workspace `.gitignore` and `estate/<workspace>.repos`;
+  `./estate.sh check` catches a miss. On a fresh machine: clone `workspace-shared`, then
+  `./estate.sh clone`.
 - Commits made here **do not** touch the sub-repos. To change project code,
   `cd` into the relevant sub-repo and commit there against **its** history.
 - All modules share `com.jrobertgardzinski:*:1.0.0-SNAPSHOT`.
