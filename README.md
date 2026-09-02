@@ -27,7 +27,7 @@ git repositories between them. One script clones and keeps all of them; its map 
 
 ```bash
 # prerequisites: git, JDK 25, Docker with compose, Node 20+ (the React UIs), Python 3 (the stubs),
-# and the GitHub CLI signed in — seven repositories are private
+# and the GitHub CLI signed in — the three formula repositories are private
 gh auth login
 
 mkdir -p ~/Documents/git && cd ~/Documents/git

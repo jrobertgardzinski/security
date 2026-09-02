@@ -12,7 +12,7 @@ email                           https://github.com/jrobertgardzinski/email.git
 password                        https://github.com/jrobertgardzinski/password.git
 microservice-security           https://github.com/jrobertgardzinski/microservice-security.git
 microservice-email              https://github.com/jrobertgardzinski/microservice-email.git
-# Python channel / identity stubs (private repositories: sign in with `gh auth login` first)
+# Python channel / identity stubs
 microservice-idp                https://github.com/jrobertgardzinski/microservice-idp.git
 microservice-sms                https://github.com/jrobertgardzinski/microservice-sms.git
 microservice-push               https://github.com/jrobertgardzinski/microservice-push.git
