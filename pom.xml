@@ -40,7 +40,7 @@
         <module>offline-jwt</module>
         <module>voting</module>
         <module>test-starter</module>
-        <module>constraint</module>
+        <module>libs</module>
         <module>config</module>
         <module>email</module>
         <module>password</module>

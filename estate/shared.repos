@@ -1,7 +1,6 @@
 # Sub-repositories of workspace-shared (the SHARED KERNEL): <directory> <git url>.
-# Note the one directory whose name differs from its GitHub repo: constraint <- libs.
 test-starter                    https://github.com/jrobertgardzinski/test-starter.git
-constraint                      https://github.com/jrobertgardzinski/libs.git
+libs                            https://github.com/jrobertgardzinski/libs.git
 config                          https://github.com/jrobertgardzinski/config.git
 adjustable-clock                https://github.com/jrobertgardzinski/adjustable-clock.git
 infrastructure-micronaut-clock  https://github.com/jrobertgardzinski/infrastructure-micronaut-clock.git

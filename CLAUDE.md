@@ -16,7 +16,7 @@ Documents/git/
 ```
 
 This workspace aggregates the independent git repositories of the kernel: the
-shared libraries (`test-starter`, `constraint` [GitHub repo: `libs`], `config`,
+shared libraries (`test-starter`, `libs` (artifact `constraint`), `config`,
 `email`, `password`, `adjustable-clock`, `infrastructure-micronaut-clock`,
 `voting`, `offline-jwt`), the hexagonal Micronaut auth service
 (`microservice-security`), the mail service (`microservice-email`, BCE Quarkus)

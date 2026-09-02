@@ -237,7 +237,7 @@ the best catalogue of "what this service can do".
 | Library | What it gives |
 |---|---|
 | `test-starter` | Test-dependency bundles: `unit-`/`bdd-`/`system-test-starter` |
-| `constraint` | Validation/constraint primitives |
+| `libs` | Validation/constraint primitives (artifact `constraint`) |
 | `config` | Configuration primitives (`PropertiesConfigPort`/`Source`) |
 | `email` | E-mail address value objects + email-security |
 | `password` | Password value objects, hashing algorithms (**Argon2**), password-security |

@@ -5,7 +5,7 @@ each module's `target/site/apidocs` — gitignored on purpose, this index is
 the versioned map). Paths are relative to `Documents/git/`.
 
 - `shared/adjustable-clock` → [`shared/adjustable-clock/target/reports/apidocs/index.html`](shared/adjustable-clock/target/reports/apidocs/index.html)
-- `shared/constraint` → [`shared/constraint/target/reports/apidocs/index.html`](shared/constraint/target/reports/apidocs/index.html)
+- `shared/libs` → [`shared/libs/target/reports/apidocs/index.html`](shared/libs/target/reports/apidocs/index.html)
 - `formula/formula-simulator` → [`formula/formula-simulator/target/reports/apidocs/index.html`](formula/formula-simulator/target/reports/apidocs/index.html)
 - `formula/microservice-paddock` → [`formula/microservice-paddock/target/reports/apidocs/index.html`](formula/microservice-paddock/target/reports/apidocs/index.html)
 - `shared/infrastructure-micronaut-clock` → [`shared/infrastructure-micronaut-clock/target/reports/apidocs/index.html`](shared/infrastructure-micronaut-clock/target/reports/apidocs/index.html)

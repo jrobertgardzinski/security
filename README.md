@@ -56,7 +56,7 @@ dependency order is:
 | Module | Description |
 |--------|-------------|
 | `test-starter` | Shared JUnit5 / BDD / system test starters |
-| `constraint` | Constraint / validation primitives |
+| `libs` | Constraint / validation primitives (artifact `constraint`) |
 | `config` | Configuration primitives (`PropertiesConfigPort`/`Source`) |
 | `email` | Email value objects + email-security |
 | `password` | Password value objects, hash algorithms (Argon2), password-security |
