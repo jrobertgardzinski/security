@@ -16,8 +16,8 @@ on:
     branches: [ main ]
   pull_request:
   workflow_dispatch:
-  # Eight of the aggregated library repos — voting, config, password, email, constraint (repo
-  # "libs"), test-starter, adjustable-clock, infrastructure-micronaut-clock — carry no workflow
+  # Eight of the aggregated library repos — voting, config, password, email, libs (artifact
+  # "constraint"), test-starter, adjustable-clock, infrastructure-micronaut-clock — carry no workflow
   # of their own, and most of them cannot: their siblings' 1.0.0-SNAPSHOT artifacts exist only
   # in this reactor, never in any registry, so a lone `mvn verify` in such a repo dies on a
   # missing dependency. A push to any of the eight therefore triggers no CI anywhere, and a
@@ -78,8 +78,8 @@ jobs:
           token: ${{ secrets.REPO_PAT }}
       - uses: actions/checkout@v7
         with:
-          repository: jrobertgardzinski/libs   # the constraint lib lives in repo "libs"
-          path: constraint
+          repository: jrobertgardzinski/libs   # artifact "constraint"
+          path: libs
           token: ${{ secrets.REPO_PAT }}
       - uses: actions/checkout@v7
         with:
@@ -202,8 +202,8 @@ jobs:
           token: ${{ secrets.REPO_PAT }}
       - uses: actions/checkout@v7
         with:
-          repository: jrobertgardzinski/libs   # the constraint lib lives in repo "libs"
-          path: constraint
+          repository: jrobertgardzinski/libs   # artifact "constraint"
+          path: libs
           token: ${{ secrets.REPO_PAT }}
       - uses: actions/checkout@v7
         with:
