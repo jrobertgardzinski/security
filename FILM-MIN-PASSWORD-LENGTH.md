@@ -35,6 +35,7 @@ Sprzątanie: `docker compose -p security down` (z `-v`, gdy chcesz też zerwać 
 |---|---|
 | microservice-security | http://localhost:8080 |
 | Mailpit (linki weryfikacyjne) | http://localhost:8025 |
+| Property (szczebel restart) | `shared/deployment/security.properties` — plik na hoście, montowany do kontenera; czytany przy `docker compose restart security` |
 | Postgres | localhost:5433, user `postgres`, hasło `secret`, baza `security` |
 | Adminer (SQL w przeglądarce) | http://localhost:8088 — System `PostgreSQL`, Server `postgres` (wypełniony), user `postgres`, hasło `secret`, baza `security` |
 
@@ -99,8 +100,33 @@ POST /admin/settings/password/min-length   {"value": 10}
   401/403 ze step-up guarda, gdy brak świeżej elewacji
 ```
 
-Źródła drabinki: `live (database)` > `restart (property)` > `rebuild (default)`.
+Źródła drabinki (dokładnie takie napisy w polu `source`): `live (database)` > `restart (properties/env)` > `rebuild (default)`.
 Property: `security.password.policy.min.length` (env: `SECURITY_PASSWORD_POLICY_MIN_LENGTH`). Default: `MinLength.DEFAULT = 5`.
+
+## 1a. Property — szczebel „restart" (scena 2)
+
+Compose montuje katalog `shared/deployment/` do kontenera security i wskazuje Micronautowi plik
+(`MICRONAUT_CONFIG_FILES=/deployment/security.properties`). Klucz w pliku to ta sama nazwa co w
+`application.yml`. Zakomentowany klucz = pusty szczebel, odpowiada default 5. Bez przebudowy obrazu.
+
+```bash
+# odkomentuj (albo wpisz inną wartość) i zrestartuj — tylko security, reszta stacku stoi
+sed -i 's|^# security.password.policy.min.length=8|security.password.policy.min.length=8|' ~/Documents/git/shared/deployment/security.properties
+cd ~/Documents/git/portal && docker compose restart security      # ~10 s do 200 na /health
+```
+Na ujęcie: otwórz plik w edytorze, odkomentuj linię, zapisz, `docker compose restart security`, GET raportu:
+```
+200  {"value": 8, "source": "restart (properties/env)", "rejected": []}
+```
+Rejestracja z 7-znakowym `Ab1!xyz` → `422 {"passwordErrors": [{"MIN_LENGTH_NOT_MET": 8}]}`.
+
+Cofnięcie: z powrotem `#` przed kluczem i restart. Alternatywa bez pliku: zmienna `SECURITY_PASSWORD_POLICY_MIN_LENGTH`
+w sekcji `environment` serwisu security w `docker-compose.identity.yml` i `docker compose up -d security`
+(env zmienia się tylko przy `up`, `restart` go nie odświeża).
+
+**Uwaga do sceny 4b (3 z psql):** jeśli property 8 nadal siedzi w pliku, drabinka po odrzuceniu wiersza 3
+spada na **8 ze źródła `restart (properties/env)`**, nie na 5 — to pokazuje, że spada o jeden szczebel, nie na dno.
+Chcesz zobaczyć spadek na default 5: zakomentuj klucz i zrestartuj przed tą sceną.
 
 ## 2. Baza
 
@@ -146,6 +172,11 @@ T=$(curl -s -X POST $SEC/authenticate -H "$H" -d '{"email":"admin@example.com","
 # scena 1: default
 curl -s $SEC/admin/settings/password/min-length -H "Authorization: Bearer $T" | jq
 curl -s -X POST $SEC/register -H "$H" -d '{"email":"u1@example.com","password":"Ab1!x"}'      # 5 znaków, przechodzi
+
+# scena 2: property (sekcja 1a) — odkomentuj klucz w shared/deployment/security.properties, potem:
+(cd ~/Documents/git/portal && docker compose restart security)
+curl -s $SEC/admin/settings/password/min-length -H "Authorization: Bearer $T" | jq              # 8, restart (properties/env)
+curl -s -X POST $SEC/register -H "$H" -d '{"email":"u1b@example.com","password":"Ab1!xyz"}'    # 7 -> 422 MIN_LENGTH_NOT_MET: 8
 
 # scena 3: admin ustawia 10
 curl -s -X POST $SEC/account/step-up -H "$H" -H "Authorization: Bearer $T" -d '{"action":"admin-settings","password":"StrongPassword1!"}'

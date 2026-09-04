@@ -68,6 +68,9 @@ services:
       <<: *otel-agent
       OTEL_SERVICE_NAME: security
       MICRONAUT_ENVIRONMENTS: dev
+      # the deployment rung as a file: deployment/security.properties on the host, edited by the
+      # operator and read on restart — a property there beats the default, a database row beats it
+      MICRONAUT_CONFIG_FILES: /deployment/security.properties
       DB_HOST: postgres
       DB_NAME: security
       DB_USER: postgres
@@ -142,6 +145,7 @@ services:
       retries: 40
       start_period: 10s
     volumes:
+      - ./deployment:/deployment:ro     # MICRONAUT_CONFIG_FILES above; the directory, so an editor's rename-on-save still shows through
       - ./observability/otel:/otel:ro   # the OpenTelemetry agent (JAVA_TOOL_OPTIONS above)
     depends_on:
       postgres:
