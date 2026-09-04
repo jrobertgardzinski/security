@@ -19,7 +19,12 @@ shared mountu) i zrywa resztę `up`. Wtedy po `infra-up.sh` dociągnij pozostał
 docker compose up -d $(docker compose config --services | grep -v '^node-exporter$')
 ```
 
-Systemowy `dockerd` (kontekst `default`) jest wyłączony (2026-08-30), żeby nie dublował stacku i portów.
+**Dwa demony = dwa stacki.** Na maszynie są kontekst `default` (systemowy `dockerd`, usługa systemd) i `desktop-linux`
+(Docker Desktop). Każdy ma własne obrazy, kontenery i woluminy. Gdy działają oba, stack z jednego trzyma porty hosta,
+a `docker compose ...` w powłoce trafia do tego, który wskazuje `docker context show` — restart idzie w jeden, żądanie
+HTTP w drugi (2026-09-04: „nie widzi zmiany"). Przed filmem: `docker context show` i `docker ps` mają pokazywać ten sam
+stack, drugi demon zatrzymany (`sudo systemctl stop docker` albo zamknięty Docker Desktop). Od 2026-09-04 stack filmu
+żyje w `default`.
 
 Przebudowa jednego serwisu po zmianie w UI/kodzie (np. memes) — `clean`, bo bez niego boot jar
 nie przepakowuje świeżego `memes-ui` i kontener serwuje stary bundle:
