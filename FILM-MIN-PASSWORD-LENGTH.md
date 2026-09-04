@@ -36,6 +36,7 @@ Sprzątanie: `docker compose -p security down` (z `-v`, gdy chcesz też zerwać 
 | microservice-security | http://localhost:8080 |
 | Mailpit (linki weryfikacyjne) | http://localhost:8025 |
 | Postgres | localhost:5433, user `postgres`, hasło `secret`, baza `security` |
+| Adminer (SQL w przeglądarce) | http://localhost:8088 — System `PostgreSQL`, Server `postgres` (wypełniony), user `postgres`, hasło `secret`, baza `security` |
 
 **Admin:** compose wyznacza `admin@example.com` jako bootstrap-admina (`SECURITY_BOOTSTRAP_ADMINS`). Wystarczy zarejestrować to konto i zweryfikować mail.
 
@@ -103,12 +104,15 @@ Property: `security.password.policy.min.length` (env: `SECURITY_PASSWORD_POLICY_
 
 ## 2. Baza
 
+**Przeglądarka (na film):** http://localhost:8088 (Adminer). Formularz: System `PostgreSQL`, Server `postgres`,
+Username `postgres`, Password `secret`, Database `security`. Po zalogowaniu: lewe menu → **SQL command**,
+wklej zapytanie, **Execute**. Tabela `security_settings` jest też klikalna na liście (podgląd / edycja wiersza).
+
+**Konsola (bez klienta na hoście):**
 ```bash
-psql -h localhost -p 5433 -U postgres -d security          # hasło: secret
-# albo bez klienta na hoście:
 docker compose -p security exec postgres psql -U postgres -d security
 ```
-IntelliJ Database: PostgreSQL, host `localhost`, port `5433`, user `postgres`, hasło `secret`, database `security`.
+Zewnętrzny klient: `localhost:5433`, user `postgres`, hasło `secret`, baza `security`.
 
 ```sql
 \d security_settings

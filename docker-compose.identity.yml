@@ -115,7 +115,7 @@ services:
       SECURITY_OAUTH_PROVIDERS_GITHUB_CLIENT_SECRET: ${IDP_CLIENT_SECRET:-demo-secret}
       SECURITY_OAUTH_PROVIDERS_GITHUB_REDIRECT_URI: http://localhost:8080/oauth/callback
       SECURITY_OAUTH_PROVIDERS_GITHUB_LABEL: GitHub
-      SECURITY_OAUTH_ALLOWED_RETURN_PREFIXES: http://localhost:8083/,http://localhost:8084/
+      SECURITY_OAUTH_ALLOWED_RETURN_PREFIXES: http://localhost:8083/,http://localhost:8088/
       # MFA SMS factor delivers codes through the shared SMS channel service (internal)
       SECURITY_SMS_URL: http://sms:8088
       # ... and authenticates to it when a key is configured. Harmless when none is: the header is
@@ -317,6 +317,21 @@ services:
     image: axllent/mailpit
     ports:
       - "8025:8025"   # web UI; SMTP (1025) stays internal
+
+  adminer:
+    # Browser SQL console for the "someone wrote a row at the database console" scene — no
+    # desktop client needed. Open http://localhost:8088, System: PostgreSQL, Server: postgres
+    # (pre-filled), user postgres, password secret, database security.
+    restart: unless-stopped
+    image: adminer:5
+    ports:
+      - "8088:8080"   # 8084 belongs to formula
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DEFAULT_DRIVER: pgsql
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: postgres:18-alpine
