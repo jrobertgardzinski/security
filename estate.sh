@@ -62,7 +62,7 @@ ensure_credentials() {
   else
     cat <<'MSG'
 github: NOT signed in via the GitHub CLI. Public repositories will clone; private ones
-        (the formula workspace's three repositories) will fail unless git has credentials of its own. Fix: `gh auth login`, then rerun.
+        will fail unless git has credentials of its own. Fix: `gh auth login`, then rerun.
 MSG
   fi
 }
