@@ -68,7 +68,7 @@ services:
       <<: *otel-agent
       OTEL_SERVICE_NAME: security
       MICRONAUT_ENVIRONMENTS: dev
-      # the deployment rung as a file: deployment/security.properties on the host, edited by the
+      # the deployment level as a file: deployment/security.properties on the host, edited by the
       # operator and read on restart — a property there beats the default, a database row beats it
       MICRONAUT_CONFIG_FILES: /deployment/security.properties
       DB_HOST: postgres

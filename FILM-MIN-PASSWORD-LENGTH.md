@@ -126,7 +126,7 @@ Na ujęcie: otwórz plik w edytorze, odkomentuj linię, zapisz, `docker compose 
 Rejestracja z 7-znakowym `Ab1!xyz` → `422 {"passwordErrors": [{"MIN_LENGTH_NOT_MET": 8}]}`.
 
 Wartość poniżej 5 w pliku (np. `2`) **nie startuje serwisu**: kontener kończy się z `illegal value for
-'security.password.policy.min.length' at the restart (properties/env) rung (2): minLength must be at least 5`
+'security.password.policy.min.length' at the restart (properties/env) level (2): minLength must be at least 5`
 i restartuje w pętli (`docker compose ps security` → Restarting, `docker compose logs security | grep "illegal value"`).
 Spadek w dół jest tylko dla wiersza w bazie; property i default muszą być legalne, inaczej nie ma drabinki.
 

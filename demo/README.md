@@ -3,8 +3,8 @@
 `film5-min-password-length.ipynb` talks to the **running Docker stack** (nothing is stubbed),
 walks the film's scenes in order, asserts every step and screenshots the gallery into `shots/`.
 
-What it proves, scene by scene: the default rung answers 5 → a deployment property claims the
-restart rung (the notebook restarts the service itself) → an ADMIN sets 10 while the system runs
+What it proves, scene by scene: the default level answers 5 → a deployment property claims the
+restart level (the notebook restarts the service itself) → an ADMIN sets 10 while the system runs
 → a length below the policy's own floor is refused and nothing changes → a row written straight
 at the psql console is refused by the ladder, which falls through and says so in the report and
 in the log → the browser shows the same refusal grouped per field.
