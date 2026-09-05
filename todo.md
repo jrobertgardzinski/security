@@ -751,6 +751,19 @@ Szczegóły każdego punktu: microservice-security/todo.md (wpisy OAuth/MFA/step
 
 ## Konfiguracja — drabinka i profile (werdykty właściciela, 2026-08-23)
 
+**AKTUALIZACJA 2026-09-05 (Robert: „przegiąłem pałę z configiem"):** taksonomia klas z tej rundy
+została odchudzona. `Rebuild/Restart/LiveConfigKey`, `*ConfigSource` i `ConfigRequirement`
+skasowane; zostały porty `Restart/LiveConfigPort`, dekorator `CachingLiveConfigPort` i
+`ConfigLadder` jako KONTRAKT (`ConfigLadder.of(key, gate, Rung.live(..), Rung.restart(..),
+Rung.rebuild(default))` — dowolny dobór szczebli, zawsze zakończony Rebuild; wariant
+„obowiązkowa" odpada). Prawa (zła property = odmowa startu, zły wiersz = warn + szczebel
+niżej, kształt drabinki) żyją w `config` i mają od dziś CI (config, password). `password-ladder`
+skasowany — live config to zamówienie produktu: `microservice-security/security-custom/
+custom-min-password-length`; bramka admina to `security-roles`, klej HTTP `security-http`.
+Poniższe werdykty o precedencji, meta-konfiguracji, profilach i bezpieczniku credentiali
+pozostają w mocy.
+
+
 Zrobione tego dnia (config, password, microservice-security, microservice-email,
 portal: memes/comments/offboarding/user-collections, compose oba, k8s/base):
 
