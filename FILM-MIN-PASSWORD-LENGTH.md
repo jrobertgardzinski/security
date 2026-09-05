@@ -49,7 +49,7 @@ Sprzątanie: `docker compose -p security down` (z `-v`, gdy chcesz też zerwać 
 **Limity, które mogą przeszkodzić:**
 - `/register` — 5 prób / 15 min per IP; w compose podniesione do 100 (`SECURITY_REGISTRATION_MAX_PER_WINDOW`). Z IDE bez tej zmiennej szósta próba = 429.
 - `/account/step-up` — 10 / 15 min per IP; w compose 100.
-- cache ustawień: domyślnie TTL 10 s, w compose **wyłączony** (`SECURITY_SETTINGS_CACHE_TTL_SECONDS: "0"`) — zmiana z POST/psql jest widoczna natychmiast. Z IDE bez tej zmiennej: odczekać 10 s.
+- snapshot ustawień: poziom live to kopia całej tabeli `security_settings`, odświeżana co TTL (domyślnie 10 s, w compose **1 s**: `SECURITY_SETTINGS_CACHE_TTL_SECONDS: "1"`). Zmiana z POST jest widoczna natychmiast (zapis odświeża snapshot), zmiana z psql — po sekundzie. Z IDE bez tej zmiennej: odczekać 10 s. Każdy klucz polityki (`security.password.policy.*`) ma ten sam poziom live: wiersz pod dowolnym z nich jest w mocy po jednym TTL, endpoint czy nie; nielegalny wiersz drabinka odrzuca i schodzi niżej.
 
 ## 1. Endpointy
 

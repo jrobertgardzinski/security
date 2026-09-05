@@ -763,6 +763,16 @@ custom-min-password-length`; bramka admina to `security-roles`, klej HTTP `secur
 Poniższe werdykty o precedencji, meta-konfiguracji, profilach i bezpieczniku credentiali
 pozostają w mocy.
 
+**AKTUALIZACJA 2026-09-06 (Robert: „zaciągać cały config z bazy i nadpisywać wg drabinki"):**
+poziom live to JEDEN snapshot tabeli `security_settings` co TTL (`SnapshotLiveConfigPort` w
+`config`, zastąpił `CachingLiveConfigPort` per klucz; zapis odświeża snapshot własnej instancji,
+nieczytelna baza trzyma ostatni snapshot; TTL Restart+Rebuild, compose 1 s). Tekst parsowany na
+szczeblu (`Rung.live/restart(port, Parse::integer)`), odmowa raz w logu per wiersz. Każdy klucz ma
+live/restart/rebuild → „zamówienia" na live nie istnieją: `security-custom`, `security-roles`,
+`security-http` rozpuszczone w domain/config/system/application/infrastructure (reguła: 3–5 warstw),
+`password-application` skasowany, klucze przy rekordach `password-config` (`MinLength.KEY`).
+Odrzucone: rekord jako drabinka, `record MinLength(RungLadder<Integer>)`, TTL na poziomie Live.
+
 
 Zrobione tego dnia (config, password, microservice-security, microservice-email,
 portal: memes/comments/offboarding/user-collections, compose oba, k8s/base):
