@@ -1,7 +1,7 @@
 # The estate — a microservice portfolio, one clone away
 
 > 👋 **Start here.** This is the map of my portfolio: a shared **identity kernel** and the social
-> **meme portal** built on it — sixteen independent repositories, six JVM flavours, every use case
+> **meme portal** built on it — twenty-one independent repositories, six JVM flavours, every use case
 > an **executable specification**. Two minutes well spent: the
 > [security brochure](https://github.com/jrobertgardzinski/microservice-security) (with a video
 > walkthrough), the [meme gallery](https://github.com/jrobertgardzinski/microservice-memes), and
