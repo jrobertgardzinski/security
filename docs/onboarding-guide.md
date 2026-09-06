@@ -238,9 +238,9 @@ the best catalogue of "what this service can do".
 |---|---|
 | `test-starter` | Test-dependency bundles: `unit-`/`bdd-`/`system-test-starter` |
 | `libs` | Validation/constraint primitives (artifact `constraint`) |
-| `config` | Configuration primitives (`PropertiesConfigPort`/`Source`) |
-| `email` | E-mail address value objects + email-security |
-| `password` | Password value objects, hashing algorithms (**Argon2**), password-security |
+| `config` | The configuration ladder: `ConfigValue`, `Configuration.liveOver/boundOver`, the settings snapshot |
+| `email` | E-mail address value objects (`email-domain`, `-config`, `-usecase`) |
+| `password` | Password value objects and policy (`password-domain`, `-config`, `-usecase`), hashing algorithms (**Argon2**) |
 | `adjustable-clock` (+ `infrastructure-micronaut-clock`) | A steerable test clock + the Micronaut adapter |
 | `voting` | The voting bounded context as a library (toggle + tally over a `Ballots` port) — used by memes and comments |
 | `offline-jwt` | **New 2026-07-10:** the shared offline JWT verification (section 7) |

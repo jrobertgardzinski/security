@@ -81,9 +81,9 @@ dependency order is:
 |--------|-------------|
 | `test-starter` | Shared JUnit5 / BDD / system test starters |
 | `libs` | Constraint / validation primitives (artifact `constraint`) |
-| `config` | Configuration primitives (`PropertiesConfigPort`/`Source`) |
-| `email` | Email value objects + email-security |
-| `password` | Password value objects, hash algorithms (Argon2), password-security |
+| `config` | The configuration ladder: `ConfigValue`, `Configuration.liveOver/boundOver`, the settings snapshot |
+| `email` | Email value objects (`email-domain`, `-config`, `-usecase`) |
+| `password` | Password value objects and policy (`password-domain`, `-config`, `-usecase`), hash algorithms (Argon2) |
 | `adjustable-clock` / `infrastructure-micronaut-clock` | Steerable test clock + its Micronaut adapter |
 | `voting` | Voting bounded context as a library (toggle + tally over the Ballots port) |
 | `offline-jwt` | Offline verification of security's tokens (JWKS + EdDSA), shared by the consumer services |
