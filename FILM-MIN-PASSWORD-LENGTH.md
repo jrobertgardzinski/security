@@ -90,11 +90,13 @@ Elewacja jest per akcja i jednorazowa — przed każdym POST min-length robisz s
 
 ### Polityka hasła — ADMIN
 ```
-GET  /admin/settings/password/min-length
-  200  {"value": 5, "source": "rebuild (default)", "rejected": []}
-  200  {"value": 10, "source": "live (database)", "rejected": []}
-  200  {"value": 5, "source": "rebuild (default)",
-        "rejected": [{"source": "live (database)", "value": 3, "reason": "minLength must be at least 5"}]}
+GET  /admin/settings/password                — cała polityka w mocy, każda z 5 reguł pod swoim kluczem
+  200  {"security.password.policy.min.length": {"value": 5, "source": "rebuild (default)", "rejected": []},
+        "security.password.policy.special.chars": {"value": "!@#$%^&*", "source": "rebuild (default)", "rejected": []},
+        "security.password.policy.requires.uppercase": {...}, "...lowercase": {...}, "...digit": {...}}
+  200  {"security.password.policy.min.length": {"value": 10, "source": "live (database)", "rejected": []}, ...}
+  200  {"security.password.policy.min.length": {"value": 5, "source": "rebuild (default)",
+        "rejected": [{"source": "live (database)", "value": 3, "reason": "minLength must be at least 5"}]}, ...}
   403  {"status": "NOT_AN_ADMIN"}
 
 POST /admin/settings/password/min-length   {"value": 10}
@@ -180,18 +182,19 @@ curl -s -X POST $SEC/verify-email -H "$H" -d '{"token":"<TOKEN>"}'
 T=$(curl -s -X POST $SEC/authenticate -H "$H" -d '{"email":"admin@example.com","password":"StrongPassword1!"}' | jq -r .accessToken)
 
 # scena 1: default
-curl -s $SEC/admin/settings/password/min-length -H "Authorization: Bearer $T" | jq
+P='."security.password.policy.min.length"'   # jq: ta jedna reguła z całej polityki
+curl -s $SEC/admin/settings/password -H "Authorization: Bearer $T" | jq "$P"
 curl -s -X POST $SEC/register -H "$H" -d '{"email":"u1@example.com","password":"Ab1!x"}'      # 5 znaków, przechodzi
 
 # scena 2: property (sekcja 1a) — odkomentuj klucz w shared/deployment/security.properties, potem:
 (cd ~/Documents/git/portal && docker compose restart security)
-curl -s $SEC/admin/settings/password/min-length -H "Authorization: Bearer $T" | jq              # 8, restart (properties/env)
+curl -s $SEC/admin/settings/password -H "Authorization: Bearer $T" | jq "$P"                    # 8, restart (properties/env)
 curl -s -X POST $SEC/register -H "$H" -d '{"email":"u1b@example.com","password":"Ab1!xyz"}'    # 7 -> 422 MIN_LENGTH_NOT_MET: 8
 
 # scena 3: admin ustawia 10
 curl -s -X POST $SEC/account/step-up -H "$H" -H "Authorization: Bearer $T" -d '{"action":"admin-settings","password":"StrongPassword1!"}'
 curl -s -X POST $SEC/admin/settings/password/min-length -H "$H" -H "Authorization: Bearer $T" -d '{"value":10}'
-curl -s $SEC/admin/settings/password/min-length -H "Authorization: Bearer $T" | jq
+curl -s $SEC/admin/settings/password -H "Authorization: Bearer $T" | jq "$P"
 curl -s -X POST $SEC/register -H "$H" -d '{"email":"u2@example.com","password":"Nine1!aaa"}'  # 9 -> 422 MIN_LENGTH_NOT_MET: 10
 
 # scena 4a: 3 z endpointu -> odmowa, nic się nie zmienia
@@ -199,7 +202,7 @@ curl -s -X POST $SEC/account/step-up -H "$H" -H "Authorization: Bearer $T" -d '{
 curl -s -X POST $SEC/admin/settings/password/min-length -H "$H" -H "Authorization: Bearer $T" -d '{"value":3}'
 
 # scena 4b: 3 z psql -> fallback (patrz sekcja 2), potem:
-curl -s $SEC/admin/settings/password/min-length -H "Authorization: Bearer $T" | jq
+curl -s $SEC/admin/settings/password -H "Authorization: Bearer $T" | jq "$P"
 curl -s -X POST $SEC/register -H "$H" -d '{"email":"u3@example.com","password":"Ab1!x"}'      # znów przechodzi, bo w mocy jest 5
 ```
 
