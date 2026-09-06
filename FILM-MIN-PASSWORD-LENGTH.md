@@ -105,6 +105,12 @@ POST /admin/settings/password/min-length   {"value": 10}
   400  {"status": "NOT_A_NUMBER"}
   403  {"status": "NOT_AN_ADMIN"}
   401/403 ze step-up guarda, gdy brak świeżej elewacji
+
+# każdy klucz Live po nazwie, ta sama bramka co przy odczycie (od 2026-09-06; katalog: GET /admin/settings)
+PUT  /admin/settings/{key}                 {"value": "false"}
+  200  {"status": "ACCEPTED", "key": "...", "value": false}
+  400  {"status": "REFUSED", "key": "...", "reason": "..."}     # wartość odrzucona przez regułę albo nie jej typ
+  404  {"status": "UNKNOWN_KEY", "key": "...", "reason": "..."} # klucz, którego nikt nie zadeklarował jako Live
 ```
 
 Źródła drabinki (dokładnie takie napisy w polu `source`): `live (database)` > `restart (properties/env)` > `rebuild (default)`.
