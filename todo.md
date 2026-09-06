@@ -773,6 +773,16 @@ live/restart/rebuild → „zamówienia" na live nie istnieją: `security-custom
 `password-application` skasowany, klucze przy rekordach `password-config` (`MinLength.KEY`).
 Odrzucone: rekord jako drabinka, `record MinLength(RungLadder<Integer>)`, TTL na poziomie Live.
 
+**DOPISEK 2026-09-06 (wieczór, po „wysil się"):** kontrakt `ConfigValue<T>` w `config` (`key()`, `value()`,
+`defaultValue()`, `holding(T)` = konstruktor jako bramka) + prawa w każdej bibliotece pilnujące statyków
+`KEY`/`DEFAULT` (kompilator nie wymusi statyków; refleksja w produkcji ODRZUCONA). `Configuration(snapshot,
+properties)` w `config` deklaruje drabinkę z samej wysyłanej reguły: `liveOver(MinLength.DEFAULT)` = trzy szczeble,
+`ConfigLadder<MinLength>`; `boundOver(MaxFailures.DEFAULT)` = property nad domyślną, rozstrzygnięte na starcie,
+zwraca rekord. Parser z typu wartości (`Parse.forType`: Integer/Boolean/String/enum). Agregaty security-config
+rozbite na VO per klucz (brute-force 5, mfa 8), walidności tokenów pod kontraktem w domenie (domena zależy od
+`config` tylko przez interfejs), step-up = katalog `StepUpAction` (enum z kluczem i domyślną per konstanta,
+`StepUpFor` bez statyków, polityka kompletna z konstrukcji, nieznana akcja = 400 UNKNOWN_ACTION).
+
 
 Zrobione tego dnia (config, password, microservice-security, microservice-email,
 portal: memes/comments/offboarding/user-collections, compose oba, k8s/base):
