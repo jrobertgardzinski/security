@@ -799,8 +799,9 @@ portal: memes/comments/offboarding/user-collections, compose oba, k8s/base):
   zachłanny resolve w composition root; mandatory-z-bazy i mandatory-hardcoded celowo
   niereprezentowalne (bootstrap + nierestartowalna flota / stała). Hybryda „wymagane w props
   + żywe nadpisanie z DB" = requirement pod drabinką, gdy zajdzie potrzeba.
-- **Meta-konfiguracja szczebel niżej**: TTL cache'a ustawień (`security.settings.cache.ttl.seconds`,
-  default 10 s, 0 = wyłączony) jest Restart-level, żeby nie opóźniał własnej naprawy.
+- **Meta-konfiguracja szczebel niżej** — NIEAKTUALNE od 2026-09-06: TTL snapshotu ustawień
+  SKASOWANY (łamał zasadę Newmana — legitymizował zapis do tabeli obok API); snapshot brany przy
+  starcie (`@Context`) i po każdym zapisie admina, nigdy z zegara.
 - **Klucze po kropkach**: `security.password.policy.min.length` (preferencja właściciela).
 - **Baza/profil ortogonalne do drabinki**: bazowy plik = inwarianty serwisu, profil = decyzje
   środowiska; test: „różnica między środowiskami to bug czy decyzja?".
